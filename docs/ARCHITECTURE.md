@@ -81,3 +81,9 @@
 
 
 -   The xBrowserSync plugin cannot edit bookmarks in the root array.
+
+## Raindrop.io
+### Datastructure
+-   Collections (Folders): [API Docs](https://developer.raindrop.io/v1/collections)
+-   Raindrops (Bookmarks): [API Docs](https://developer.raindrop.io/v1/raindrops)
+
