@@ -22,6 +22,13 @@
     -   `tsconfig.json` to provide a TS-config for the project root
         (this is needed )
 
+-   Prettier
+    -   `pnpm install -D -w prettier`
+    -   Create `.prettierrc.json` and `.prettierignore`
+
+-   ESlint
+    -   `pnpm install -D -w eslint eslint-plugin-node @typescript-eslint/eslint-plugin @typescript-eslint/parser`
+
 
 ## Init a library
 -   `cd libs` and `mkdir <lib_name>` and `cd <lib_name>`
@@ -35,11 +42,11 @@
         "version": "1.0.0",
         "description": "",
         "main": "src/index.ts",
-        "//main": "dist/index.js",
-        "//types": "dist/index.d.ts",
+        "//main": "build/index.js",
+        "//types": "build/index.d.ts",
         "scripts": {
             "build": "tsc",
-            "clean:dist": "rimraf dist",
+            "clean:build": "rimraf build",
             "clean:nm": "rimraf node_modules"
         },
         "keywords": [],
@@ -63,7 +70,7 @@
 
             /* Emit */
             "declaration": true,    /* Generate .d.ts files from TypeScript and JavaScript files in your project. */
-            "outDir": "./dist"      /* Specify an output folder for all emitted files. */
+            "outDir": "./build"     /* Specify an output folder for all emitted files. */
         }
     }
     ```

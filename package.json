@@ -1,19 +1,30 @@
 {
-  "name": "wwwlauncher",
-  "version": "0.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "build:all": "pnpm -r build",
-    "clean:nm": "pnpm -r clean:nm; rimraf node_modules",
-    "clean:dist": "pnpm -r clean:dist"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "@types/node": "^20.11.17",
-    "rimraf": "^5.0.5",
-    "typescript": "^5.3.3"
-  }
+    "name": "wwwlauncher",
+    "version": "0.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "start:playground": "pnpm --filter playground start",
+        "start:playground:dev": "pnpm --filter playground start:dev",
+        "build:all": "pnpm -r build",
+        "clean:nm": "pnpm -r clean:nm; rimraf node_modules",
+        "clean:build": "pnpm -r clean:build",
+        "fmt:check": "prettier --check *",
+        "fmt:write": "prettier --write *",
+        "lint:check": "eslint **/*.ts",
+        "lint:fix": "eslint --fix **/*.ts"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "@types/node": "^20.11.17",
+        "@typescript-eslint/eslint-plugin": "^6.21.0",
+        "@typescript-eslint/parser": "^6.21.0",
+        "eslint": "^8.56.0",
+        "eslint-plugin-node": "^11.1.0",
+        "prettier": "^3.2.5",
+        "rimraf": "^5.0.5",
+        "typescript": "^5.3.3"
+    }
 }
