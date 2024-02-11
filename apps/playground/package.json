@@ -9,7 +9,6 @@
         "start": "ts-node .",
         "start:dev": "ts-node-dev --respawn --clear .",
         "start:build": "node build/main.js",
-
         "build": "tsc",
         "clean:build": "rimraf build",
         "clean:nm": "rimraf node_modules"

@@ -10,7 +10,7 @@
         "clean:nm": "pnpm -r clean:nm; rimraf node_modules",
         "clean:build": "pnpm -r clean:build",
         "fmt:check": "prettier --check *",
-        "fmt:write": "prettier --write *",
+        "fmt:fix": "prettier --write *",
         "lint:check": "eslint **/*.ts",
         "lint:fix": "eslint --fix **/*.ts"
     },
