@@ -1,0 +1,4 @@
+# PNPM Workspace Packages
+packages:
+  - 'apps/*'
+  - 'libs/*'

@@ -1,0 +1,19 @@
+{
+  "name": "qwerty",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.ts",
+  "//main": "dist/index.js",
+  "//types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "clean:dist": "rimraf dist",
+    "clean:nm": "rimraf node_modules"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "asdf": "workspace:*"
+  }
+}

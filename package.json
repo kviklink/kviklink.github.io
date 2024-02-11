@@ -1,0 +1,19 @@
+{
+  "name": "wwwlauncher",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build:all": "pnpm -r build",
+    "clean:nm": "pnpm -r clean:nm; rimraf node_modules",
+    "clean:dist": "pnpm -r clean:dist"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.11.17",
+    "rimraf": "^5.0.5",
+    "typescript": "^5.3.3"
+  }
+}
