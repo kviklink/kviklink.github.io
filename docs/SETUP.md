@@ -24,10 +24,12 @@
 
 -   Prettier
     -   `pnpm install -D -w prettier`
+    -   Create `.editorconfig`
     -   Create `.prettierrc.json` and `.prettierignore`
 
 -   ESlint
     -   `pnpm install -D -w eslint eslint-plugin-node @typescript-eslint/eslint-plugin @typescript-eslint/parser`
+    -   Create `eslintrc.json`
 
 
 ## Init a library
