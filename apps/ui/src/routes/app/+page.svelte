@@ -4,7 +4,7 @@
 
     let loggedIn = false
     if (!loggedIn) {
-        goto('/app/login')
+        goto('/app/login', { replaceState: true })
     }
 </script>
 
