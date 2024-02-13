@@ -1,9 +1,15 @@
 <!-- Script ---------------------------------------------------------------- -->
 <script lang="ts">
+    import { goto } from "$app/navigation";
+
+    let loggedIn = false
+    if (!loggedIn) {
+        goto('/app/login')
+    }
 </script>
 
 <!-- HTML ------------------------------------------------------------------ -->
-<h1>Landing Page</h1>
-<a href="/app">App</a>
+<h1>App</h1>
+<a href="/">Home</a>
 
 <!-- ----------------------------------------------------------------------- -->
