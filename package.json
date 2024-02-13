@@ -4,6 +4,8 @@
     "description": "",
     "main": "index.js",
     "scripts": {
+        "start:ui": "pnpm --filter ui build; pnpm --filter ui preview",
+        "start:ui:dev": "pnpm --filter ui dev",
         "start:playground": "pnpm --filter playground start",
         "start:playground:dev": "pnpm --filter playground start:dev",
         "build:all": "pnpm -r build",
@@ -24,6 +26,7 @@
         "eslint": "^8.56.0",
         "eslint-plugin-node": "^11.1.0",
         "prettier": "^3.2.5",
+        "prettier-plugin-svelte": "^3.2.0",
         "rimraf": "^5.0.5",
         "typescript": "^5.3.3"
     }

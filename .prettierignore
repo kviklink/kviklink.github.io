@@ -9,4 +9,7 @@ dist
 # Markdown files
 **/*.md
 
+# Svelte
+.svelte-kit
+
 !.prettierignore

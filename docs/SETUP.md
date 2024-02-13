@@ -31,6 +31,35 @@
     -   `pnpm install -D -w eslint eslint-plugin-node @typescript-eslint/eslint-plugin @typescript-eslint/parser`
     -   Create `eslintrc.json`
 
+## Init Svelte (SvelteKit) application
+-   `cd apps`
+-   `pnpm create svelte@latest ui`
+    -   Which Svelte app template: **Skeleton project**
+    -   Add type checking with TypeScript: **Yes, using TypeScript syntax**
+    -   Select additional options:
+        -   playwright
+        -   vitest
+        -   **try the Svelte 5 preview**
+
+-   Install svelte prettier plugin
+    -   `pnpm install -D -w prettier-plugin-svelte`
+    -   Add the following lines to `.pretierrc.json`:  
+        ```json
+        {
+            ...,
+
+            "plugins": ["prettier-plugin-svelte"],
+            "overrides": [
+                {
+                    "files": "*.svelte",
+                    "options": {
+                        "parser": "svelte"
+                    }
+                }
+            ],
+            ...
+        }
+        ```
 
 ## Init a library
 -   `cd libs` and `mkdir <lib_name>` and `cd <lib_name>`
