@@ -9,6 +9,9 @@ const config = {
 
     kit: {
         adapter: adapter({ fallback: 'index.html' }),
+        // base: process.env.NODE_ENV === 'production'
+        //     ? '/sveltekit-github-pages'
+        //     : '',
     },
 };
 
