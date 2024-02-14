@@ -5,7 +5,7 @@
         "esModuleInterop": true,
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
-        "noUnusedLocals": true,
+        "noUnusedLocals": false,
         "sourceMap": true,
         "moduleResolution": "Node",
         "skipLibCheck": true,

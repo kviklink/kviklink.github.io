@@ -1,57 +1,7 @@
 // Imports /////////////////////////////////////////////////////////////////////
-import { inspect } from 'util'
-import { z, ZodError } from 'zod'
-import { Result, Ok, Err, Option, Some, None} from 'ts-results'
+import { Err, Ok, Result, Option } from 'ts-results'
+import { ZodError, z } from 'zod'
 import { toOption } from 'ts-results-utils'
-
-// Main ////////////////////////////////////////////////////////////////////////
-const raw = [
-    {
-        title: '[xbs] Other',
-        id: 1,
-        children: [
-            {
-                title: 'Google',
-                url: 'https://www.google.de',
-                id: 2,
-                tags: [
-                    'asdf'
-                ]
-            },
-            {
-                id: 100,
-                title: 'Test 1',
-                children: [
-                    {
-                        id: 101,
-                        title: 'asdf',
-                        url: 'https://hjg-sim.de',
-                        tags: [ 'schule', 'HJG' ]
-                    }
-                ]
-            }
-        ]
-    },
-    {
-        id: 3,
-        title: 'Test',
-        description: 'Hello World',
-        url: 'https://duckduckgo.org',
-        tags: [ 'asdf' ]
-    },
-    {
-        id: 4,
-        title: 'Test',
-        description: 'Hello World',
-        url: 'https://duckduckgo.org'
-    },
-    {
-        id: 5,
-        title: 'Test',
-        description: 'Hello World',
-        url: 'https://duckduckgo.org'
-    }
-]
 
 // Schemata and Interfaces /////////////////////////////////////////////////////
 
@@ -82,6 +32,8 @@ const SFolderBase = z.object({
 })
 
 const SFolder: z.ZodType<IFolder> = SFolderBase.extend({
+    // Usually children is not `undefined`. But just to make sure parsing will
+    // work we use `.optional()` and default to `[]` on transformation.
     children    : z.lazy(() => SBookmark.or(SFolder).array()).optional()
 })
 
@@ -91,7 +43,7 @@ export type IFolder = z.infer<typeof SFolderBase> & {
 
 
 // Data Transformation /////////////////////////////////////////////////////////
-interface ExtIBookmark {
+export interface ExtIBookmark {
     type        : 'bookmark'
     id          : number
     title       : Option<string>
@@ -100,14 +52,18 @@ interface ExtIBookmark {
     tags        : string[]
 }
 
-interface ExtIFolder {
+export interface ExtIFolder {
     type        : 'folder'
     id          : number
-    title       : Option<String>
+    title       : Option<string>
     children    : (ExtIBookmark | ExtIFolder)[]
 }
 
-
+/**
+ * This function recursively transforms
+ * {@link IBookmark}    to {@link ExtIBookmark} and
+ * {@link IFolder}      to {@link ExtIFolder}.
+ */
 function transformation(
     input: (IFolder | IBookmark)[]
 ): (ExtIBookmark | ExtIFolder)[] {
@@ -133,8 +89,8 @@ function transformation(
             return {
                 type: 'folder',
                 title: toOption(title),
-                ...rest,
-                children: children ? transformation(children) : []
+                children: children ? transformation(children) : [],
+                ...rest
             }
         }
     })
@@ -162,15 +118,4 @@ export function parse(data: unknown): Result<IXbsData, ZodError> {
     return Ok(result.data)
 }
 
-////////////////////////////////////////////////////////////////////////////////
-
-
-
-async function main() {
-    const res = parse(raw)
-    console.log(inspect(res, true, null, true))
-}
-
-////////////////////////////////////////////////////////////////////////////////
-main();
 ////////////////////////////////////////////////////////////////////////////////
