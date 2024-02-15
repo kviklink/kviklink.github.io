@@ -7,8 +7,10 @@
     "//types": "build/index.d.ts",
     "scripts": {
         "build": "tsc",
-        "clean:build": "rimraf build",
-        "clean:nm": "rimraf node_modules"
+        "clean": "rimraf build; rimraf node_modules",
+        "test": "jest --verbose",
+        "test:watch": "jest --verbose --watch",
+        "test:cov": "jest --verbose --watch --coverage"
     },
     "keywords": [],
     "author": "",
@@ -24,9 +26,29 @@
         "lzutf8": "^0.6.3"
     },
     "devDependencies": {
-        "@types/uuid": "^9.0.8"
+        "@types/uuid": "^9.0.8",
+        "@types/jest": "^29.5.12",
+        "jest": "^29.7.0",
+        "ts-jest": "^29.1.2"
     },
     "engines": {
         "node": ">=11.0.0"
+    },
+    "jest": {
+        "moduleFileExtensions": [
+            "js",
+            "json",
+            "ts"
+        ],
+        "rootDir": "src",
+        "testRegex": ".*\\.spec\\.ts$",
+        "transform": {
+            "^.+\\.(t|j)s$": "ts-jest"
+        },
+        "collectCoverageFrom": [
+            "**/*.(t|j)s"
+        ],
+        "coverageDirectory": "../coverage",
+        "testEnvironment": "node"
     }
 }

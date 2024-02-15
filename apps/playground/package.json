@@ -10,8 +10,7 @@
         "start:dev": "tsx watch .",
         "start:build": "node build/main.js",
         "build": "tsc",
-        "clean:build": "rimraf build",
-        "clean:nm": "rimraf node_modules"
+        "clean": "rimraf build; rimraf node_modules"
     },
     "keywords": [],
     "author": "",

@@ -6,11 +6,14 @@
     "scripts": {
         "ui:run": "pnpm --filter ui build; pnpm --filter ui preview",
         "ui:dev": "pnpm --filter ui dev",
+
         "play:run": "pnpm --filter playground start",
         "play:dev": "pnpm --filter playground start:dev",
-        "build:all": "pnpm -r build",
-        "clean:nm": "pnpm -r clean:nm; rimraf node_modules",
-        "clean:build": "pnpm -r clean:build",
+
+        "build": "pnpm -r build",
+        "clean": "pnpm -r clean; rimraf node_modules",
+        "test": "pnpm -r test",
+
         "fmt:check": "prettier --check *",
         "fmt:fix": "prettier --write *",
         "lint:check": "eslint **/*.ts",
