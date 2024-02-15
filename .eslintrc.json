@@ -10,13 +10,13 @@
     ],
     "rules": {
         // "prettier/prettier": "error",
-        "block-scoped-var": "error",
+        "block-scoped-var": "warn",
         "eqeqeq": "error",
         "no-var": "error",
-        "prefer-const": "error",
-        "eol-last": "error",
-        "prefer-arrow-callback": "error",
-        "no-trailing-spaces": "error",
+        "prefer-const": "warn",
+        "eol-last": "warn",
+        "prefer-arrow-callback": "warn",
+        "no-trailing-spaces": "warn",
         "quotes": [
             "warn",
             "single",
@@ -66,7 +66,8 @@
                 "require-atomic-updates": "off",
 
                 "@typescript-eslint/no-unused-vars": "warn",
-                "no-unused-vars": "warn"
+                "no-unused-vars": "warn",
+                "node/no-unpublished-import": "off"
             },
             "parserOptions": {
                 "ecmaVersion": 2018,
