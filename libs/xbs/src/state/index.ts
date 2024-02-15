@@ -7,6 +7,7 @@ import { Result, Ok, Err, None, Option, Some } from 'ts-results'
 import { v4 as uuidv4 } from 'uuid'
 import { Folder } from './folder';
 import { Bookmark } from './bookmark';
+import { transformBookmark, transformFolder } from '../parser'
 import type {
     IXbsData, ExtIFolder, ExtIBookmark, IFolder, IBookmark
 } from '../parser'
@@ -17,11 +18,11 @@ export class XbsState {
     public readonly root: Folder
 
     // Constructor /////////////////////////////////////////////////////////////
-    private constructor(root: Folder) {
+    public constructor(root: Folder) {
         this.root = root
     }
 
-    // Methods /////////////////////////////////////////////////////////////////
+    // Public Methods //////////////////////////////////////////////////////////
     /**
      * Convert the state to the xBrowserSync data structure
      */
@@ -112,7 +113,7 @@ export class XbsState {
 
                 if (!visited.has(child.data.id)) {
                     visited.add(child.data.id)
-                    queue.push()
+                    queue.push(child)
                 }
             }
         }
@@ -150,12 +151,16 @@ export class XbsState {
     }
 
     /**
-     * Adds the given `child` to the `destination` and returns the destination
-     * folder which then contains the newly added `child`.
+     * Adds a bookmark with the given information to the state.
+     * This function adds a valid id to the data.
      */
-    public add(
-        child: Folder | Bookmark, destination: Folder | number
+    public addBookmark(
+        child: Omit<IBookmark, 'id'>, destination: Folder | number
     ): Result<Folder, string> {
+        // Create bookmark
+        const data: IBookmark = { id: this.nextId(), ...child }
+        const bookmark = new Bookmark(None, transformBookmark(data))
+
         // Get destination
         let dst: Folder
         if (destination instanceof Folder) {
@@ -170,8 +175,40 @@ export class XbsState {
         }
 
         // Add child
-        child.setParent(dst)
-        dst.addChild(child)
+        bookmark.setParent(dst)
+        dst.addChild(bookmark)
+
+        // Return parent
+        return Ok(dst)
+    }
+
+    /**
+     * Adds a folder with the given information to the state.
+     * This function adds a valid id to the data.
+     */
+    public addFolder(
+        child: Omit<IFolder, 'id' | 'children'>, destination: Folder | number
+    ): Result<Folder, string> {
+        // Create folder
+        const data: IFolder = { id: this.nextId(), children: [], ...child }
+        const folder = new Folder(None, transformFolder(data))
+
+        // Get destination
+        let dst: Folder
+        if (destination instanceof Folder) {
+            dst = destination
+
+        } else {
+            const dstFolder = this.findFolderById(destination)
+                .toResult('destination not found')
+
+            if (dstFolder.err) { return Err(dstFolder.val) }
+            dst = dstFolder.val
+        }
+
+        // Add child
+        folder.setParent(dst)
+        dst.addChild(folder)
 
         // Return parent
         return Ok(dst)
@@ -219,6 +256,46 @@ export class XbsState {
         return Ok(dst)
     }
 
+    public moveTo(
+        source: Bookmark | Folder | number,
+        destination: Folder | number,
+        after: Folder | Bookmark | number | null,
+    ): Result<Folder, string> {
+        // Get source
+        let src: Bookmark | Folder
+        if (source instanceof Bookmark || source instanceof Folder) {
+            src = source
+
+        } else {
+            const result = this.findById(source)
+                .toResult('source not found')
+
+            if (result.err) { return Err(result.val) }
+            src = result.val
+        }
+
+        // Get destination
+        let dst: Folder
+        if (destination instanceof Folder) {
+            dst = destination
+
+        } else {
+            const dstFolder = this.findFolderById(destination)
+                .toResult('destination not found')
+
+            if (dstFolder.err) { return Err(dstFolder.val) }
+            dst = dstFolder.val
+        }
+
+        // Move (delete src from its parent; add to new destination)
+        if (src.parent.none) { return Err('source has no parent') }
+        src.parent.val.removeChild(src)
+        dst.addChildAfter(src, after)
+
+        // Return
+        return Ok(dst)
+    }
+
     /**
      * Remove a {@link Bookmark} or {@link Folder}.
      */
@@ -244,6 +321,36 @@ export class XbsState {
 
         // Return
         return Ok(tar)
+    }
+
+    // Private Methods /////////////////////////////////////////////////////////
+    /**
+     * Adds the given `child` to the `destination` and returns the destination
+     * The `child` is a full {@link Folder} or {@link Bookmark} object.
+     * This function is private and only used when the state is initialized.
+     */
+    private addFull(
+        child: Folder | Bookmark, destination: Folder | number
+    ): Result<Folder, string> {
+        // Get destination
+        let dst: Folder
+        if (destination instanceof Folder) {
+            dst = destination
+
+        } else {
+            const dstFolder = this.findFolderById(destination)
+                .toResult('destination not found')
+
+            if (dstFolder.err) { return Err(dstFolder.val) }
+            dst = dstFolder.val
+        }
+
+        // Add child
+        child.setParent(dst)
+        dst.addChild(child)
+
+        // Return parent
+        return Ok(dst)
     }
 
     // Static Methods //////////////////////////////////////////////////////////
@@ -318,6 +425,8 @@ export class XbsState {
          * add all the nodes into the state.
          */
         const state = new XbsState(new Folder(None, root))
+        nodes.shift() // this removes the first node (= root node) from the list
+
         for (const node of nodes) {
             // If node is a folder
             if (node.data.type === 'folder') {
@@ -330,7 +439,10 @@ export class XbsState {
                 }
 
                 // Add this folder to the state (which sets the parent)
-                state.add(folder, node.parent.val)
+                const res = state.addFull(folder, node.parent.val)
+                if (res.err) {
+                    return Err('inserting folder failed')
+                }
             }
             // Else, it's a bookmark
             else {
@@ -343,7 +455,10 @@ export class XbsState {
                 }
 
                 // Add this bookmark to the state (which sets the parent)
-                state.add(bookmark, node.parent.val)
+                const res = state.addFull(bookmark, node.parent.val)
+                if (res.err) {
+                    return Err('inserting bookmark failed')
+                }
             }
         }
 

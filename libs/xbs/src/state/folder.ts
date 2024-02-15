@@ -6,9 +6,9 @@ import { Bookmark } from './bookmark'
 
 // Interfaces //////////////////////////////////////////////////////////////////
 export interface FolderData {
-    type        : 'folder'
-    id          : number
-    title       : Option<string>
+    readonly type        : 'folder'
+    readonly id          : number
+    readonly title       : Option<string>
 }
 
 // Bookmark Class //////////////////////////////////////////////////////////////
@@ -36,6 +36,33 @@ export class Folder {
 
     public addChild(child: Folder | Bookmark) {
         this.children.push(child)
+    }
+
+    public addChildAfter(
+        child: Folder | Bookmark, pos: Folder | Bookmark | number | null
+    ) {
+        // Special case: if pos === null move to front
+        if (pos === null) {
+            this.children.unshift(child)
+            return
+        }
+
+        // Finde the item after which the child should be added
+        let after: Folder | Bookmark | undefined
+        if (typeof pos === 'number') {
+            after = this.children.find(c => c.data.id === pos)
+
+        } else {
+            after = this.children.find(c => c === pos)
+        }
+
+        // Calculate the index of the item
+        const index = after
+            ? this.children.indexOf(after)
+            : (this.children.length - 1)
+
+        // Add the child
+        this.children.splice(index + 1, 0, child)
     }
 
     public removeChild(child: Folder | Bookmark) {

@@ -15,7 +15,7 @@ const SBookmark = z.object({
     description : z.string().optional(),
     url         : z.string(),
     tags        : z.array(z.string()).optional(),
-})
+}).strict()
 
 export type IBookmark = z.infer<typeof SBookmark>
 
@@ -29,34 +29,34 @@ export type IBookmark = z.infer<typeof SBookmark>
 const SFolderBase = z.object({
     id          : z.number(),
     title       : z.string().optional(),
-})
+}).strict()
 
 const SFolder: z.ZodType<IFolder> = SFolderBase.extend({
     // Usually children is not `undefined`. But just to make sure parsing will
     // work we use `.optional()` and default to `[]` on transformation.
-    children    : z.lazy(() => SBookmark.or(SFolder).array()).optional()
-})
+    children    : z.lazy(() => SBookmark.or(SFolder).array())
+}).strict()
 
 export type IFolder = z.infer<typeof SFolderBase> & {
-    children?   : (IFolder | IBookmark)[]
+    children    : (IFolder | IBookmark)[]
 }
 
 
 // Data Transformation /////////////////////////////////////////////////////////
 export interface ExtIBookmark {
-    type        : 'bookmark'
-    id          : number
-    title       : Option<string>
-    description : Option<string>
-    url         : string
-    tags        : string[]
+    readonly type        : 'bookmark'
+    readonly id          : number
+    readonly title       : Option<string>
+    readonly description : Option<string>
+    readonly url         : string
+    readonly tags        : string[]
 }
 
 export interface ExtIFolder {
-    type        : 'folder'
-    id          : number
-    title       : Option<string>
-    children    : (ExtIBookmark | ExtIFolder)[]
+    readonly type        : 'folder'
+    readonly id          : number
+    readonly title       : Option<string>
+    readonly children    : (ExtIBookmark | ExtIFolder)[]
 }
 
 /**
@@ -72,28 +72,36 @@ function transformation(
         const item = i as (IFolder & IBookmark)
 
         // Case: `item` is bookmark
-        if (item.url) {
-            const { title, description, tags, ...rest } = item as IBookmark
-            return {
-                type: 'bookmark',
-                title: toOption(title),
-                description: toOption(description),
-                tags: tags || [],
-                ...rest
-            }
+        if (item.url !== undefined) {
+            return transformBookmark(item as IBookmark)
         }
 
         // Case: `item` is folder
         else {
-            const { title, children, ...rest } = item as IFolder
-            return {
-                type: 'folder',
-                title: toOption(title),
-                children: children ? transformation(children) : [],
-                ...rest
-            }
+            return transformFolder(item as IFolder)
         }
     })
+}
+
+export function transformBookmark(item: IBookmark): ExtIBookmark {
+    const { title, description, tags, ...rest } = item as IBookmark
+    return {
+        type: 'bookmark',
+        title: toOption(title),
+        description: toOption(description),
+        tags: tags || [],
+        ...rest
+    }
+}
+
+export function transformFolder(item: IFolder): ExtIFolder {
+    const { title, children, ...rest } = item as IFolder
+    return {
+        type: 'folder',
+        title: toOption(title),
+        children: children ? transformation(children) : [],
+        ...rest
+    }
 }
 
 
