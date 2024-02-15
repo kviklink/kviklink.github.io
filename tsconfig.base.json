@@ -7,7 +7,6 @@
         "experimentalDecorators": true,
         "noUnusedLocals": false,
         "sourceMap": true,
-        "moduleResolution": "Node",
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true
     }

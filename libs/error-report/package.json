@@ -13,7 +13,5 @@
     "keywords": [],
     "author": "",
     "license": "ISC",
-    "dependencies": {
-        "ts-results": "^3.3.0"
-    }
+    "dependencies": {}
 }

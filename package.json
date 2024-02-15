@@ -4,10 +4,10 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "start:ui": "pnpm --filter ui build; pnpm --filter ui preview",
-        "start:ui:dev": "pnpm --filter ui dev",
-        "start:playground": "pnpm --filter playground start",
-        "start:playground:dev": "pnpm --filter playground start:dev",
+        "ui:run": "pnpm --filter ui build; pnpm --filter ui preview",
+        "ui:dev": "pnpm --filter ui dev",
+        "play:run": "pnpm --filter playground start",
+        "play:dev": "pnpm --filter playground start:dev",
         "build:all": "pnpm -r build",
         "clean:nm": "pnpm -r clean:nm; rimraf node_modules",
         "clean:build": "pnpm -r clean:build",
@@ -20,13 +20,13 @@
     "author": "",
     "license": "ISC",
     "devDependencies": {
-        "@types/node": "^20.11.17",
+        "@types/node": "^20.11.18",
         "@typescript-eslint/eslint-plugin": "^6.21.0",
         "@typescript-eslint/parser": "^6.21.0",
         "eslint": "^8.56.0",
         "eslint-plugin-node": "^11.1.0",
         "prettier": "^3.2.5",
-        "prettier-plugin-svelte": "^3.2.0",
+        "prettier-plugin-svelte": "^3.2.1",
         "rimraf": "^5.0.5",
         "typescript": "^5.3.3"
     }

@@ -3,9 +3,16 @@
 import base64js from 'base64-js'
 import lzutf8 from 'lzutf8'
 
-// This is needed for 'webcrypto' to work under Node.js (v16)
-import { webcrypto } from 'crypto'
-const crypto = webcrypto as unknown as Crypto
+// Dynami Import
+let crypto: Crypto
+if (typeof window === 'undefined') {
+    // This is needed for 'webcrypto' to work under Node.js (v16)
+    crypto = require('crypto').webcrypto as unknown as Crypto
+
+} else {
+    crypto = window.crypto
+}
+
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -35,6 +42,9 @@ export class CryptoUtils {
         plaintextPassword   : string,
         saltSyncId          : string,
     ): Promise<string> {
+        // Get crypto
+        // const crypto = await getCrypto()
+
         // Create text encoder (for creating Uint8Arrays)
         const encoder = new TextEncoder()
 
@@ -83,6 +93,9 @@ export class CryptoUtils {
         base64key: string,
         encryptedData: string,
     ): Promise<string> {
+        // Get crypto
+        // const crypto = await getCrypto()
+
         // Create byte array from key
         const keyByteArray = base64js.toByteArray(base64key)
 
@@ -120,6 +133,9 @@ export class CryptoUtils {
         base64key: string,
         plaintextData: string,
     ): Promise<string> {
+        // Get crypto
+        // const crypto = await getCrypto()
+
         // Create byte array from key
         const keyByteArray = base64js.toByteArray(base64key)
 

@@ -12,6 +12,10 @@
         "test:integration": "playwright test",
         "test:unit": "vitest"
     },
+    "dependencies": {
+        "xbs": "workspace:*",
+        "ts-results": "^3.3.0"
+    },
     "devDependencies": {
         "@playwright/test": "^1.28.1",
         "@sveltejs/adapter-auto": "^3.0.0",

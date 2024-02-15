@@ -1,5 +1,10 @@
 <!-- Script ---------------------------------------------------------------- -->
 <script lang="ts">
+    import { Xbs, XbsBuilder } from 'xbs'
+
+    import { Result, Ok, Err } from 'ts-results'
+
+
 </script>
 
 <!-- HTML ------------------------------------------------------------------ -->

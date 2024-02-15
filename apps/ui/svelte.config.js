@@ -13,6 +13,10 @@ const config = {
         //     ? '/sveltekit-github-pages'
         //     : '',
     },
+
+    compilerOptions: {
+        runes: true,
+    }
 };
 
 export default config;

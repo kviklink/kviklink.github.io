@@ -1,3 +1,7 @@
+// Re-Exports //////////////////////////////////////////////////////////////////
+export * from './bookmark'
+export * from './folder'
+
 // Imports /////////////////////////////////////////////////////////////////////
 import { Result, Ok, Err, None, Option, Some } from 'ts-results'
 import { IXbsData, ExtIFolder, ExtIBookmark, IFolder, IBookmark } from '../parser';

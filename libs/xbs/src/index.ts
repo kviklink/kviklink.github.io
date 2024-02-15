@@ -1,14 +1,13 @@
 // Re-Exports //////////////////////////////////////////////////////////////////
 export { XbsBuilder } from './builder'
+export { Folder, Bookmark } from './state'
 
 // Imports /////////////////////////////////////////////////////////////////////
 import { Err, None, Ok, Option, Result, Some } from 'ts-results'
-import { XbsState } from './state'
+import { XbsState, Bookmark, Folder } from './state'
 import { CryptoUtils } from './utils'
 import { IBookmark, IFolder, parse } from './parser'
 import { getBookmarks, updateBookmarks } from './api'
-import { Bookmark } from './state/bookmark'
-import { Folder } from './state/folder'
 
 // Class ///////////////////////////////////////////////////////////////////////
 
