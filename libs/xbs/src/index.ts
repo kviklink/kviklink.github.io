@@ -6,7 +6,7 @@ export { Folder, Bookmark } from './state'
 import { Err, None, Ok, Option, Result, Some } from 'ts-results'
 import { XbsState, Bookmark, Folder } from './state'
 import { CryptoUtils } from './utils'
-import { IBookmark, IFolder, parse } from './parser'
+import { type IBookmark, type IFolder, parse } from './parser'
 import { getBookmarks, updateBookmarks } from './api'
 
 // Class ///////////////////////////////////////////////////////////////////////

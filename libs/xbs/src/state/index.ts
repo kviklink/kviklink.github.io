@@ -4,10 +4,12 @@ export * from './folder'
 
 // Imports /////////////////////////////////////////////////////////////////////
 import { Result, Ok, Err, None, Option, Some } from 'ts-results'
-import { IXbsData, ExtIFolder, ExtIBookmark, IFolder, IBookmark } from '../parser';
 import { v4 as uuidv4 } from 'uuid'
 import { Folder } from './folder';
 import { Bookmark } from './bookmark';
+import type {
+    IXbsData, ExtIFolder, ExtIBookmark, IFolder, IBookmark
+} from '../parser'
 
 // XbsState ////////////////////////////////////////////////////////////////////
 export class XbsState {

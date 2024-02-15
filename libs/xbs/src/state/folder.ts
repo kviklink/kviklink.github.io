@@ -1,6 +1,6 @@
 // Imports /////////////////////////////////////////////////////////////////////
 import { Option, Some } from 'ts-results'
-import { IFolder, ExtIFolder } from '../parser'
+import { type IFolder, type ExtIFolder } from '../parser'
 import { toValue } from 'ts-results-utils'
 import { Bookmark } from './bookmark'
 
