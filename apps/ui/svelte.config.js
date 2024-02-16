@@ -12,6 +12,9 @@ const config = {
         // base: process.env.NODE_ENV === 'production'
         //     ? '/sveltekit-github-pages'
         //     : '',
+        paths: {
+			base: process.argv.includes('dev') ? '' : process.env.BASE_PATH
+		}
     },
 
     compilerOptions: {
