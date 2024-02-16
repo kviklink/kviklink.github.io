@@ -12,6 +12,8 @@
     pl-4 pr-4
     bg-white dark:bg-black
     bg-opacity-70 dark:bg-opacity-70
+    hover:bg-opacity-100 hover:dark:bg-opacity-100
+    transition duration-200
     shadow-sm
     backdrop-filter backdrop-blur-sm
     flex justify-between items-center
