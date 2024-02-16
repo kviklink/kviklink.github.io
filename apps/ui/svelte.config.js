@@ -8,7 +8,7 @@ const config = {
     preprocess: vitePreprocess(),
 
     kit: {
-        adapter: adapter({ fallback: 'index.html' }),
+        adapter: adapter({ fallback: '404.html' }),
         // base: process.env.NODE_ENV === 'production'
         //     ? '/sveltekit-github-pages'
         //     : '',
