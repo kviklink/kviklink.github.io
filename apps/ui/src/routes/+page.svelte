@@ -2,6 +2,7 @@
 <script lang="ts">
     import ModeToggle from "$lib/components/custom/mode-toggle/mode-toggle.svelte";
     import Button from "$lib/components/ui/button/button.svelte";
+    import { GithubLogo } from "radix-icons-svelte";
 </script>
 
 <!-- HTML ------------------------------------------------------------------ -->
@@ -27,6 +28,9 @@
     <!-- Right aligned -->
     <div class="flex items-center space-x-4">
         <Button variant="default" href="/login">Login</Button>
+        <Button variant='outline' size='icon' href='https://github.com/kviklink/kviklink.github.io' target='_blank'>
+            <GithubLogo class="scale-150"/>
+        </Button>
         <ModeToggle />
     </div>
 </div>
