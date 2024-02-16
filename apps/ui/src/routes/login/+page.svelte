@@ -71,8 +71,8 @@
 
                 <!-- password input -->
                 <div class="grid w-full items-center gap-1.5 pt-4">
-                    <Label for='xbs-sid' class="">Password</Label>
-                    <Input id='xbs-sid' type='password' class="font-mono" placeholder='••••••••••••••••' />
+                    <Label for='xbs-pw' class="">Password</Label>
+                    <Input id='xbs-pw' type='password' class="font-mono" placeholder='••••••••••••••••' />
                     <p class="text-sm text-muted-foreground">Enter your password.</p>
                 </div>
             </Card.Content>
