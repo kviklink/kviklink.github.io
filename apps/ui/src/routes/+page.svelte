@@ -42,7 +42,7 @@
         h-64
     ">
         <h1 class="
-            text-8xl
+            text-8xl select-none
         ">
             [kvɪk] link
         </h1>
@@ -78,14 +78,14 @@
 ">
     <!-- Icon license -->
     <div class="
-        flex flex-col justify-center items-center
+        flex flex-col justify-center items-center select-none
     ">
         <p>
             All emojis designed by
             <Button
                 variant='link'
                 href="https://openmoji.org/"
-                class="p-0 text-md"
+                class="p-0 text-md text-zinc-500 dark:text-zinc-400"
                 target='_blank'
             >
                 OpenMoji
@@ -95,7 +95,7 @@
             <Button
                 variant='link'
                 href="https://creativecommons.org/licenses/by-sa/4.0/#"
-                class="p-0 text-md"
+                class="p-0 text-md text-zinc-500 dark:text-zinc-400"
                 target='_blank'
             >
                 CC BY-SA 4.0
