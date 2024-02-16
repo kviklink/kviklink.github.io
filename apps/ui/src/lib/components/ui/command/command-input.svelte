@@ -3,19 +3,11 @@
 	import { MagnifyingGlass } from "radix-icons-svelte";
 	import { cn } from "$lib/utils";
 
-	type $$Props = CommandPrimitive.InputProps & {
-		collapsed?: boolean
-	};
+	type $$Props = CommandPrimitive.InputProps;
 
 	let className: string | undefined | null = undefined;
 	export { className as class };
 	export let value: string = "";
-
-	/// >>> CUSTOMIZATION
-	export let collapsed: $$Props['collapsed'] = false
-	let collapsedStyle = ''
-	$: collapsedStyle = collapsed ? '' : 'border-b'
-	/// <<< END
 </script>
 
 <div class="flex items-center border-b px-3" data-cmdk-input-wrapper="">
