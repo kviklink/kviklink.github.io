@@ -61,6 +61,12 @@
         }
         ```
 
+-   Install `@sveltejs/adapter-static` and configure in `svelte.config.js`
+-   Setup `shadcn-svelte`
+    -   `pnpx svelte-add@latest tailwindcss`
+    -   `pnpx install`
+    -   `pnpx shadcn-svelte@latest init`
+
 ## Init a library
 -   `cd libs` and `mkdir <lib_name>` and `cd <lib_name>`
 
