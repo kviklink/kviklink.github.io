@@ -66,6 +66,14 @@
     -   `pnpx svelte-add@latest tailwindcss`
     -   `pnpx install`
     -   `pnpx shadcn-svelte@latest init`
+        -   TypeScript: yes
+        -   Style: New York
+        -   Base Color: Zinc
+        -   Global CSS file: src/app.pcss
+        -   Tailwind Config: tailwind.config.cjs
+        -   Configure Import Alias: $lib/components
+        -   Configure Import Alias: $lib/utils
+        
 
 ## Init a library
 -   `cd libs` and `mkdir <lib_name>` and `cd <lib_name>`

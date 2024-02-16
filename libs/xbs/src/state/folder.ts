@@ -25,6 +25,7 @@ export class Folder {
         this.parent = parent
 
         // Remove `children` and set `data` attribute
+        // eslint-disable-next-line
         const { children, ...rest } = data
         this.data = { ...rest }
     }

@@ -1,15 +1,11 @@
 <!-- Script ---------------------------------------------------------------- -->
 <script lang="ts">
-    import { goto } from "$app/navigation";
-
-    let loggedIn = false
-    if (!loggedIn) {
-        goto('/login', { replaceState: true })
-    }
+    import ModeToggle from '$lib/components/custom/mode-toggle/mode-toggle.svelte';
 </script>
 
 <!-- HTML ------------------------------------------------------------------ -->
-<h1>App</h1>
-<a href="/">Home</a>
+<!-- TODO: insert top bar -->
+<ModeToggle/>
+<slot />
 
 <!-- ----------------------------------------------------------------------- -->

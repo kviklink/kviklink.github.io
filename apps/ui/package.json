@@ -6,19 +6,22 @@
         "dev": "vite dev",
         "build": "vite build",
         "preview": "vite preview",
-
         "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
         "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-
         "testx": "npm run test:integration && npm run test:unit",
         "test:unit": "vitest",
         "test:integration": "playwright test",
-
         "clean": "rimraf build; rimraf node_modules"
     },
     "dependencies": {
-        "xbs": "workspace:*",
-        "ts-results": "^3.3.0"
+        "bits-ui": "^0.18.1",
+        "clsx": "^2.1.0",
+        "mode-watcher": "^0.2.1",
+        "radix-icons-svelte": "^1.2.1",
+        "tailwind-merge": "^2.2.1",
+        "tailwind-variants": "^0.2.0",
+        "ts-results": "^3.3.0",
+        "xbs": "workspace:*"
     },
     "devDependencies": {
         "@playwright/test": "^1.28.1",
