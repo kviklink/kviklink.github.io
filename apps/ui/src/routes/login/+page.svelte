@@ -6,9 +6,39 @@
     import {Label} from '$lib/components/ui/label'
     import Button from '$lib/components/ui/button/button.svelte';
     import { Separator } from '$lib/components/ui/separator'
+    import { ModeToggle } from '$lib/components/custom/mode-toggle';
 </script>
 
 <!-- HTML ------------------------------------------------------------------ -->
+
+<!-- Top Bar -->
+<div class="
+    w-full h-16 fixed
+    pl-4 pr-4
+    bg-white dark:bg-zinc-950
+    bg-opacity-70 dark:bg-opacity-70
+    hover:bg-opacity-100 hover:dark:bg-opacity-100
+    transition duration-200
+    shadow-sm
+    backdrop-filter backdrop-blur-sm
+    flex justify-between items-center
+">
+    <!-- Left aligned -->
+    <div class="flex items-center space-x-2">
+        <Button variant="ghost" href="/">Home</Button>
+        <Button variant="ghost" href="/app">App</Button>
+    </div>
+
+    <!-- Right aligned -->
+    <div class="flex items-center space-x-4">
+        <Button variant="default" href="/login">Login</Button>
+        <ModeToggle />
+    </div>
+</div>
+
+<!-- Spacer -->
+<div class="w-full h-16"/>
+
 <div class="
     w-full
     p-16
@@ -47,7 +77,7 @@
                 </div>
             </Card.Content>
             <Card.Footer class="flex justify-between items-center">
-                <Button variant='outline' class="text-muted-foreground">Create xBrowserSync</Button>
+                <Button variant='outline' class="text-muted-foreground" href="https://www.xbrowsersync.org/" target='_blank'>Create xBrowserSync</Button>
                 <Button variant='default'>Submit</Button>
             </Card.Footer>
           </Card.Root>
