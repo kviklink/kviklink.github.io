@@ -126,7 +126,7 @@ jobs:
         run: pnpm install
 
       - name: Svelte check
-        run: cd app/ui; pnpm check
+        run: cd apps/ui; pnpm check
 
   # Deployment job
   deploy:
