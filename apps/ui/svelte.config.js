@@ -13,8 +13,8 @@ const config = {
         //     ? '/sveltekit-github-pages'
         //     : '',
         paths: {
-			base: process.argv.includes('dev') ? '' : process.env.BASE_PATH,
-            assets: process.argv.includes('dev') ? '' : process.env.BASE_PATH,
+			base: process.argv.includes('dev') ? '' : 'https://kviklink.github.io', // process.env.BASE_PATH,
+            assets: process.argv.includes('dev') ? '' : 'https://kviklink.github.io', // process.env.BASE_PATH,
 		}
     },
 
