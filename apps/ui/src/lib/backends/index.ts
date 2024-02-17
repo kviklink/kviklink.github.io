@@ -9,6 +9,21 @@ export const BACKENDS = ['xbs', 'raindrop'] as const
 export type Backend = (typeof BACKENDS)[number]
 
 // Interfaces //////////////////////////////////////////////////////////////////
+export interface IBookmark {
+    id          : number,
+    title       : string,
+    description : string,
+    note        : string,
+    url         : string,
+    tags        : string[],
+
+    metadata    : {
+        path    : string[],
+        hostname: string,
+    },
+}
+
+
 export interface IBackendBuilder {
     /**
      * Log-in and return access-token, some key or any other credential.
@@ -55,7 +70,7 @@ export interface IBackend extends IBookmarkReader {
 }
 
 export interface IBookmarkReader {
-    get: () => Promise<unknown>,
+    get: () => Promise<Result<IBookmark[], string>>,
 }
 
 export interface IBookmarkManager {

@@ -38,7 +38,11 @@
 
     // On mount
     $effect(() => {
-        check().then(success => { if (!success) { gotoLogin() } })
+        check().then(success => {
+            if (!success) { gotoLogin(); return }
+
+            backend.data.unwrap().get().then(data => console.log(data.unwrap()))
+        })
     })
 </script>
 

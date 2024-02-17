@@ -1,8 +1,10 @@
 // Import //////////////////////////////////////////////////////////////////////
 import { Result, Ok, Err } from 'ts-results'
-import { XbsBuilder, type Xbs } from 'xbs'
-import { type IBackend, type IBackendBuilder } from '.'
+import { XbsBuilder, type Xbs, Folder, Bookmark } from 'xbs'
+import type { IBookmark, IBackend, IBackendBuilder } from '.'
 import { z } from 'zod'
+import { toValue } from 'ts-results-utils'
+import { hostnameFromUrl } from '../utils/hostname'
 
 // Builder /////////////////////////////////////////////////////////////////////
 export const XbsBackendBuilder: IBackendBuilder = {
@@ -85,9 +87,94 @@ export class XbsBackend implements IBackend {
     }
 
     // IBookmarkReader Methods /////////////////////////////////////////////////
-    async get(): Promise<unknown> { return this.xbs.get() }
+    async get(): Promise<Result<IBookmark[], string>> {
+        // Get tree-structure from xBrowserSync
+        const tree = await this.xbs.get()
+        if (tree.err) { return Err(tree.val) }
+
+        // Perform depth-first search to find all bookmarks and transform them
+        // to the expected `IBookmark` interface.
+        const stack = tree.val
+        const results: IBookmark[] = []
+
+        while (stack.length > 0) {
+            const item = stack.pop()!
+
+            if (item instanceof Bookmark) {
+                results.push({
+                    id          : item.data.id,
+                    title       : toValue(item.data.title) || '',
+                    description : toValue(item.data.description) || '',
+                    url         : item.data.url,
+                    tags        : item.data.tags,
+                    note        : '',
+                    metadata    : {
+                        path    : getAncestors(item),
+                        hostname: hostnameFromUrl(item.data.url),
+                    }
+                })
+
+            } else {
+                // TODO: maybe optimize this by addind children of type
+                // bookmark to results immediately and only push folders to
+                // the stack.
+                stack.push(...item.children)
+            }
+        }
+
+        return Ok(results)
+    }
 
     ////////////////////////////////////////////////////////////////////////////
 }
+
+// Helper Functions ////////////////////////////////////////////////////////////
+
+/**
+ * Function returns the ancestors of a folder/bookmark in correct order.
+ */
+function getAncestors(item: Folder | Bookmark): string[] {
+    const path = [ toValue(item.data.title) || '' ]
+    let curr = item
+    while (curr.parent.some) {
+        path.push( toValue(curr.parent.val.data.title) || '' )
+        curr = curr.parent.val
+    }
+
+    return path.reverse()
+}
+
+/**
+ * Alternatively to calculating the ancestors for every folder/bookmark,
+ * the "parent" information can be injected while traversing the data structure
+ * (e.g. the depth-first search).
+ * The following (commented out) code shows an example of how this works.
+ *
+ * Note: For this to work the datastructure must be changed to accomodate this
+ * information!
+ */
+// interface Item {
+//     id: number,
+//     parents?: number[],
+//     children: Item[]
+// }
+//
+// const stack: Item[] = [...items]
+// const result: Item[] = []
+
+// while (stack.length > 0) {
+//     // Get item from stack
+//     const item = stack.pop()!
+
+//     // Add item to results
+//     result.push({ id: item.id, children: [], parents: item.parents })
+
+//     // Inject "parent"-information into children
+//     item.children.map(c => c.parents = [...(item.parents || []), item.id])
+
+//     // Add children to stack
+//     stack.push(...item.children)
+
+// }
 
 ////////////////////////////////////////////////////////////////////////////////
