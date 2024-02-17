@@ -134,11 +134,27 @@ export class XbsBackend implements IBackend {
  * Function returns the ancestors of a folder/bookmark in correct order.
  */
 function getAncestors(item: Folder | Bookmark): string[] {
-    const path = [ toValue(item.data.title) || '' ]
-    let curr = item
-    while (curr.parent.some) {
-        path.push( toValue(curr.parent.val.data.title) || '' )
-        curr = curr.parent.val
+    // Start with empty path because the current folder/bookmark title should
+    // not be included.
+    const path = []
+
+    // Pointer to the current item's parent
+    let parent = item.parent
+
+    // While the current item has a parent and a grandparent,
+    // add the parent's title to the path.
+    while (parent.some) {
+        // Unwrap option
+        const par = parent.val
+
+        // If parent is not the root node...
+        if (par.data.id === -1) { break }
+
+        // ...add the parent's title to the path
+        path.push( toValue(par.data.title) || '' )
+
+        // Move pointer to parent's parent
+        parent = par.parent
     }
 
     return path.reverse()
