@@ -4,11 +4,42 @@
     import { Button } from '$lib/components/ui/button'
     import * as Command from '$lib/components/ui/command';
     import { Pencil1, Gear } from 'radix-icons-svelte';
-
     import { goto } from "$app/navigation";
+    import backend from '$lib/state/backend.svelte'
+    import credentials from '$lib/state/credentials.svelte'
+    import { XbsBackendBuilder } from '$lib/backends';
 
-    // let loggedIn = false
-    // if (!loggedIn) { goto('/login', { replaceState: true }) }
+    async function check(): Promise<boolean> {
+        // If backend set -> continue with it
+        if (backend.data.some) { return true }
+
+        // If backend not set, but credentials are loaded -> try to authenticate
+        if (credentials.data.some) {
+            if (credentials.data.val.backend === 'xbs') {
+                // Re-authenticate
+                const xbsBackend = await XbsBackendBuilder
+                    .auth(credentials.data.val.credentials)
+
+                if (xbsBackend.err) { return false }
+
+                // Write backend to state
+                backend.set(xbsBackend.val)
+
+                return true
+            }
+        }
+
+        return false
+    }
+
+    function gotoLogin() {
+        goto('/login', { replaceState: true })
+    }
+
+    // On mount
+    $effect(() => {
+        check().then(success => { if (!success) { gotoLogin() } })
+    })
 </script>
 
 <!-- HTML ------------------------------------------------------------------ -->

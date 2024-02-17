@@ -15,11 +15,11 @@ import { getBookmarks, updateBookmarks } from './api'
  * TODO: add documentation.
  */
 export class Xbs {
-    // Private Attributes //////////////////////////////////////////////////////
-    private baseUrl: string
-    private version: string
-    private syncId: string
-    private base64key: string
+    // Attributes //////////////////////////////////////////////////////////////
+    public readonly baseUrl: string
+    public readonly version: string
+    public readonly syncId: string
+    public readonly base64key: string
 
     private state: Option<XbsState> = None
     private lastUpdated: Option<string> = None
@@ -86,7 +86,7 @@ export class Xbs {
         if (dec.err) { return Err(dec.val) }
 
         // Parse decrypted data
-        const par = parse(dec)
+        const par = parse(dec.val)
         if (par.err) { return Err(par.val.toString()) }
 
         // Create and set state

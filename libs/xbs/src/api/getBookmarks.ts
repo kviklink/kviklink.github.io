@@ -32,7 +32,7 @@ export async function getBookmarks(
     }
 
     // Validate and parse response
-    const resData = GetBookmarksResSchema.safeParse(json)
+    const resData = GetBookmarksResSchema.safeParse(json.val)
     if (!resData.success) {
         return Err(Report.from(resData.error).add(new GetBookmarksError()))
     }

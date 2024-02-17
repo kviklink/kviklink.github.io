@@ -1,0 +1,31 @@
+// Imports /////////////////////////////////////////////////////////////////////
+import { Option, Some, None } from 'ts-results'
+import { type IBackend } from '../backends'
+
+// Initialize State ////////////////////////////////////////////////////////////
+const backend = $state<{ data: Option<IBackend> }>({ data: None })
+
+// Functions ///////////////////////////////////////////////////////////////////
+function get() {
+    return backend.data
+}
+
+function set(apiClient: IBackend) {
+    backend.data = Some(apiClient)
+}
+
+function unset() {
+    backend.data = None
+}
+
+// Export //////////////////////////////////////////////////////////////////////
+export default {
+    // Getter
+    get data() { return get() },
+
+    // Functions
+    set     : set,
+    unset   : unset,
+}
+
+////////////////////////////////////////////////////////////////////////////////

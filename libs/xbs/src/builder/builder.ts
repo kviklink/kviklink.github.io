@@ -35,16 +35,32 @@ export class XbsBuilder {
         return this
     }
 
+    public setRawCredentials(syncId: string, base64key: string): XbsBuilder {
+        this.syncId = Some(syncId)
+        this.base64key = Some(base64key)
+        return this
+    }
+
     public async finish(): Promise<Result<Xbs, string>> {
-        // Get the base64key
-        if (this.base64keyPromise.none) { return Err('internal error') }
+        // If neither the key nor the promise are set return an error
+        if (this.base64key.none && this.base64keyPromise.none) {
+            return Err('internal error')
+        }
 
-        const keyPromise = this.base64keyPromise.val
-        const result = await Result.wrapAsync(() => keyPromise)
-        if (result.err) { return Err('hashing key failed') }
+        // If the key is not set but the promise is -> await the promise
+        if (this.base64key.none && this.base64keyPromise.some) {
+            // Get promise
+            const keyPromise = this.base64keyPromise.val
 
-        this.base64key = Some(result.val)
+            // Wait for promise and handle error
+            const result = await Result.wrapAsync(() => keyPromise)
+            if (result.err) { return Err('hashing key failed') }
 
+            // Set base64key
+            this.base64key = Some(result.val)
+        }
+
+        // Check if all credentials are present and return
         if (this.syncId.some && this.base64key.some) {
             return Ok(new Xbs(
                 this.baseUrl, this.version, this.syncId.val, this.base64key.val

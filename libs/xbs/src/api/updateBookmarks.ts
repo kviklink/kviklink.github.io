@@ -34,7 +34,7 @@ export async function updateBookmarks(
     }
 
     // Validate and parse response
-    const resData = UpdateBookmarksResSchema.safeParse(json)
+    const resData = UpdateBookmarksResSchema.safeParse(json.val)
 
     if (!resData.success) {
         return Err(Report.from(resData.error).add(new UpdateBookmarksError()))

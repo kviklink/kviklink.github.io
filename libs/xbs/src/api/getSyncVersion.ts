@@ -32,7 +32,7 @@ export async function getSyncVersion(
     }
 
     // Validate and parse response
-    const resData = GetBookmarksLastUpdatedResSchema.safeParse(json)
+    const resData = GetBookmarksLastUpdatedResSchema.safeParse(json.val)
 
     if (!resData.success) {
         return Err(Report.from(resData.error).add(new GetLastUpdatedError()))

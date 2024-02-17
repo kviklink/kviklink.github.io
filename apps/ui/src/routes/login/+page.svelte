@@ -8,6 +8,37 @@
     import { Separator } from '$lib/components/ui/separator'
     import { ModeToggle } from '$lib/components/custom/mode-toggle';
     import { GithubLogo } from 'radix-icons-svelte';
+    import { XbsBackendBuilder } from '$lib/backends'
+    import backend from '$lib/state/backend.svelte'
+    import credentials from '$lib/state/credentials.svelte'
+    import { goto } from '$app/navigation'
+    import { CheckCircled } from 'radix-icons-svelte'
+
+    let xbsSyncId = $state('')
+    let xbsPassword = $state('')
+
+    async function xbsSubmit() {
+        // Login
+        const xbsBackend = await XbsBackendBuilder.login({
+            syncId: xbsSyncId,
+            password: xbsPassword
+        })
+        if (xbsBackend.err) { alert('login failed'); return }
+
+        // Write backend to state
+        backend.set(xbsBackend.val)
+
+        // Write credentials to state
+        credentials.set({
+            backend: 'xbs',
+            credentials: xbsBackend.val.getCredentials()
+        })
+
+        goto('/app')
+    }
+
+    async function raindropSubmit() {}
+
 </script>
 
 <!-- HTML ------------------------------------------------------------------ -->
@@ -43,11 +74,27 @@
 <!-- Spacer -->
 <div class="w-full h-16"/>
 
+
 <div class="
     w-full
     p-16
-    flex justify-center
+    flex flex-col items-center justify-center
 ">
+    <!-- Still logged in -->
+    {#if credentials.data.some}
+    <div class="w-[500px] mb-8">
+        <Card.Root class="">
+            <Card.Header class="p-3 flex flex-row justify-between">
+                <div class="flex flex-row items-center space-x-4">
+                    <CheckCircled class="ml-2 w-6 h-6 text-green-600"/>
+                    <span class="">You're still logged in.</span>
+                </div>
+                <Button variant='secondary' href="/app" class="!mt-0">Go to App</Button>
+            </Card.Header>
+        </Card.Root>
+    </div>
+    {/if}
+
 
     <Tabs.Root value="xbs" class="w-[500px]">
         <Tabs.List class="grid w-full grid-cols-2">
@@ -69,20 +116,20 @@
                 <!-- sync id input -->
                 <div class="grid w-full items-center gap-1.5 pb-4">
                     <Label for='xbs-sid' class="">xBrowserSync Sync ID</Label>
-                    <Input id='xbs-sid' type='text' class="font-mono" placeholder='xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' />
+                    <Input id='xbs-sid' type='text' class="font-mono" placeholder='xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' bind:value={xbsSyncId} />
                     <p class="text-sm text-muted-foreground">Enter your sync id.</p>
                 </div>
 
                 <!-- password input -->
                 <div class="grid w-full items-center gap-1.5 pt-4">
                     <Label for='xbs-pw' class="">Password</Label>
-                    <Input id='xbs-pw' type='password' class="font-mono" placeholder='••••••••••••••••' />
+                    <Input id='xbs-pw' type='password' class="font-mono" placeholder='••••••••••••••••' bind:value={xbsPassword}/>
                     <p class="text-sm text-muted-foreground">Enter your password.</p>
                 </div>
             </Card.Content>
             <Card.Footer class="flex justify-between items-center">
                 <Button variant='outline' class="text-muted-foreground" href="https://www.xbrowsersync.org/" target='_blank'>Create xBrowserSync</Button>
-                <Button variant='default'>Submit</Button>
+                <Button variant='default' onclick={xbsSubmit}>Submit</Button>
             </Card.Footer>
           </Card.Root>
         </Tabs.Content>
