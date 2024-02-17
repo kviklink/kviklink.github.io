@@ -36,7 +36,7 @@ export class XbsState {
     public nextId(): number {
         // Breadth first search
         const queue: (Folder | Bookmark)[] = [ this.root ]
-        const visited: Set<number> = new Set([ this.root.data.id ])
+        // const visited: Set<number> = new Set([ this.root.data.id ])
 
         let largestId = 0
 
@@ -50,10 +50,10 @@ export class XbsState {
             // If node is a folder, add its children to the queue
             if (node instanceof Folder) {
                 for (const child of node.children) {
-                    if (!visited.has(child.data.id)) {
-                        visited.add(child.data.id)
+                    // if (!visited.has(child.data.id)) {
+                        // visited.add(child.data.id)
                         queue.push(child)
-                    }
+                    // }
                 }
             }
         }
@@ -68,7 +68,7 @@ export class XbsState {
     public findById(id: number): Option<Folder | Bookmark> {
         // Breadth first search
         const queue: (Folder | Bookmark)[] = [ this.root ]
-        const visited: Set<number> = new Set([ this.root.data.id ])
+        // const visited: Set<number> = new Set([ this.root.data.id ])
 
         while (queue.length > 0) {
             // Get first node from queue
@@ -80,10 +80,10 @@ export class XbsState {
             // Add children to queue
             if (node instanceof Folder) {
                 for (const child of node.children) {
-                    if (!visited.has(child.data.id)) {
-                        visited.add(child.data.id)
+                    // if (!visited.has(child.data.id)) {
+                        // visited.add(child.data.id)
                         queue.push(child)
-                    }
+                    // }
                 }
             }
         }
@@ -97,7 +97,7 @@ export class XbsState {
     public findFolderById(id: number): Option<Folder> {
         // Breadth first search
         const queue: Folder[] = [ this.root ]
-        const visited: Set<number> = new Set([ this.root.data.id ])
+        // const visited: Set<number> = new Set([ this.root.data.id ])
 
         while (queue.length > 0) {
             // Get first node from queue
@@ -111,10 +111,10 @@ export class XbsState {
                 // Skip non-folder children
                 if (!(child instanceof Folder)) { continue }
 
-                if (!visited.has(child.data.id)) {
-                    visited.add(child.data.id)
+                // if (!visited.has(child.data.id)) {
+                    // visited.add(child.data.id)
                     queue.push(child)
-                }
+                // }
             }
         }
 
@@ -127,7 +127,7 @@ export class XbsState {
     public findBookmarkById(id: number): Option<Bookmark> {
         // Breadth first search
         const queue: (Folder | Bookmark)[] = [ this.root ]
-        const visited: Set<number> = new Set([ this.root.data.id ])
+        // const visited: Set<number> = new Set([ this.root.data.id ])
 
         while (queue.length > 0) {
             // Get first node from queue
@@ -139,10 +139,10 @@ export class XbsState {
 
             } else {
                 for (const child of node.children) {
-                    if (!visited.has(child.data.id)) {
-                        visited.add(child.data.id)
+                    // if (!visited.has(child.data.id)) {
+                        // visited.add(child.data.id)
                         queue.push(child)
-                    }
+                    // }
                 }
             }
         }
@@ -384,7 +384,7 @@ export class XbsState {
          * next processing step.
          */
         const stack: Metadata[] = [{ uuid: uuidv4(), parent: None, data: root }]
-        const discovered: Set<string> = new Set()
+        // const discovered: Set<string> = new Set()
         const nodes: Metadata[] = []
 
         while (stack.length > 0) {
@@ -392,9 +392,9 @@ export class XbsState {
             const node = stack.pop()!
 
             // If node was not discovered yet...
-            if (!discovered.has(node.uuid)) {
+            // if (!discovered.has(node.uuid)) {
                 // Mark node as discovered and add it to the nodes array
-                discovered.add(node.uuid)
+                // discovered.add(node.uuid)
                 nodes.push(node)
 
                 // If node is a folder, add its children to the stack
@@ -409,7 +409,7 @@ export class XbsState {
                         })
                     }
                 }
-            }
+            // }
         }
 
         // Ensure unique ids
