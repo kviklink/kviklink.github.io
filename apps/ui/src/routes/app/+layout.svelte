@@ -52,7 +52,7 @@
         check().then(success => {
             if (!success) { gotoLogin(); return }
 
-            backend.data.unwrap().get().then(data => console.log(data.unwrap()))
+            // backend.data.unwrap().get().then(data => console.log(data.unwrap()))
         })
     })
 </script>
