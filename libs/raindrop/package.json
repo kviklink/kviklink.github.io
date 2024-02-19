@@ -1,0 +1,31 @@
+{
+    "name": "raindrop",
+    "version": "0.0.0",
+    "description": "",
+    "main": "src/index.ts",
+    "//main": "build/index.js",
+    "//types": "build/index.d.ts",
+    "scripts": {
+        "build": "tsc",
+        "clean": "rimraf build; rimraf node_modules",
+        "test": "vitest --run",
+        "test:watch": "vitest"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "error-report": "workspace:*",
+        "ky": "^1.2.0",
+        "ts-results": "^3.3.0",
+        "zod": "^3.22.4"
+    },
+    "devDependencies": {
+        "@types/uuid": "^9.0.8",
+        "vite": "^5.0.3",
+        "vitest": "^1.2.0"
+    },
+    "engines": {
+        "node": ">=11.0.0"
+    }
+}

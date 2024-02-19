@@ -80,7 +80,7 @@ export class Xbs {
     public async get(): Promise<Result<XbsData, string>> {
         // Get data from API
         const res = await getBookmarks(this.baseUrl, this.syncId)
-        if (res.err) { return Err(res.val.getErrors()[0].message) }
+        if (res.err) { return Err(res.val.toString()) }
 
         // Decrypt data
         const dec = await this.decrypt(res.val.bookmarks)
@@ -110,7 +110,7 @@ export class Xbs {
         const res = await updateBookmarks(this.baseUrl, this.syncId, {
             bookmarks: enc.val, lastUpdated: data.lastUpdated,
         })
-        if (res.err) { return Err(res.val.getErrors()[0].message) }
+        if (res.err) { return Err(res.val.toString()) }
 
         // Return
         return Ok(null)

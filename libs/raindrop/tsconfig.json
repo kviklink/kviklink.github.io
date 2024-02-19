@@ -1,0 +1,13 @@
+{
+    "extends": "../../tsconfig.base.json",
+    "compilerOptions": {
+        /* Language and Environment */
+        "target": "es2016", /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
+        /* Modules */
+        "module": "commonjs", /* Specify what module code is generated. */
+        "rootDir": "./src", /* Specify the root folder within your source files. */
+        /* Emit */
+        "outDir": "./build", /* Specify an output folder for all emitted files. */
+        "declaration": true /* Generate .d.ts files from TypeScript and JavaScript files in your project. */
+    }
+}

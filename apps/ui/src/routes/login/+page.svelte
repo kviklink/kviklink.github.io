@@ -8,7 +8,7 @@
     import { Separator } from '$lib/components/ui/separator'
     import { ModeToggle } from '$lib/components/custom/mode-toggle';
     import { GithubLogo } from 'radix-icons-svelte';
-    import { XbsBackendBuilder } from '$lib/backends'
+    import { RaindropBackendBuilder, XbsBackendBuilder } from '$lib/backends'
     import backend from '$lib/state/backend.svelte'
     import credentials from '$lib/state/credentials.svelte'
     import { goto } from '$app/navigation'
@@ -16,6 +16,7 @@
 
     let xbsSyncId = $state('')
     let xbsPassword = $state('')
+    let rdToken = $state('')
 
     async function xbsSubmit() {
         // Login
@@ -37,7 +38,25 @@
         goto('/app')
     }
 
-    async function raindropSubmit() {}
+    async function raindropSubmit() {
+        // Login
+        const rdBackend = await RaindropBackendBuilder.login({
+            token: rdToken
+        })
+
+        if (rdBackend.err) { alert('login failed'); return }
+
+        // Write backend to state
+        backend.set(rdBackend.val)
+
+        // Write credentials to state
+        credentials.set({
+            backend: 'raindrop',
+            credentials: rdBackend.val.getCredentials()
+        })
+
+        goto('/app')
+    }
 
 </script>
 
@@ -145,11 +164,16 @@
                 </Card.Header>
                 <Separator/>
                 <Card.Content class="p-6">
-                    <p class="text-muted-foreground">Raindrop.io integration <span class="italic">coming soon!</span></p>
+                    <!-- password input -->
+                    <div class="grid w-full items-center gap-1.5 pb-4">
+                        <Label for='rd-token' class="">Token</Label>
+                        <Input id='rd-token' type='password' class="font-mono" placeholder='••••••••••••••••' bind:value={rdToken}/>
+                        <p class="text-sm text-muted-foreground">Enter the "Test Token" from your Raindrop.io settings.</p>
+                    </div>
                 </Card.Content>
                 <Card.Footer class="flex justify-between items-center">
                     <Button variant='outline' disabled class="text-muted-foreground">Create Raindrop Account</Button>
-                    <Button variant='default' disabled >Submit</Button>
+                    <Button variant='default' onclick={raindropSubmit}>Submit</Button>
                 </Card.Footer>
               </Card.Root>
         </Tabs.Content>

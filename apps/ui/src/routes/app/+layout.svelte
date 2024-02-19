@@ -7,7 +7,7 @@
     import { goto } from "$app/navigation";
     import backend from '$lib/state/backend.svelte'
     import credentials from '$lib/state/credentials.svelte'
-    import { XbsBackendBuilder } from '$lib/backends';
+    import { RaindropBackendBuilder, XbsBackendBuilder } from '$lib/backends';
 
     async function check(): Promise<boolean> {
         // If backend set -> continue with it
@@ -24,6 +24,17 @@
 
                 // Write backend to state
                 backend.set(xbsBackend.val)
+
+                return true
+            } else if (credentials.data.val.backend === 'raindrop') {
+                // Re-authenticate
+                const rdBackend = await RaindropBackendBuilder
+                    .auth(credentials.data.val.credentials)
+
+                if (rdBackend.err) { return false }
+
+                // Write backend to state
+                backend.set(rdBackend.val)
 
                 return true
             }

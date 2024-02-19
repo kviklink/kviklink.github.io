@@ -1,0 +1,16 @@
+// Imports /////////////////////////////////////////////////////////////////////
+import { z } from 'zod'
+
+// Schema //////////////////////////////////////////////////////////////////////
+/**
+ * Represents a raindrop from the API.
+ */
+export const SCollection = z.object({
+    _id         : z.number(),
+    parent      : z.object({ $id: z.number() }).optional(),
+    title       : z.string(),
+})
+
+export type ICollection = z.infer<typeof SCollection>
+
+////////////////////////////////////////////////////////////////////////////////
