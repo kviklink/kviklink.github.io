@@ -1,38 +1,45 @@
 // Imports /////////////////////////////////////////////////////////////////////
 import { Option, Some } from 'ts-results'
-import { type IFolder, type ExtIFolder } from '../parser'
+import { type IFolder, type XIFolder } from '../parser'
 import { toValue } from 'ts-results-utils'
 import { Bookmark } from './bookmark'
 
 // Interfaces //////////////////////////////////////////////////////////////////
-export interface FolderData {
-    readonly type        : 'folder'
-    readonly id          : number
-    readonly title       : Option<string>
-}
+// export interface FolderData {
+//     readonly type        : 'folder'
+//     readonly id          : number
+//     readonly title       : Option<string>
+// }
 
 // Bookmark Class //////////////////////////////////////////////////////////////
-export class Folder {
+export class Folder implements XIFolder {
     // Public Attributes ///////////////////////////////////////////////////////
-    public parent: Option<Folder>
+    public _parent: Option<Folder>
+
+    public readonly _type = 'folder'
+    public readonly id: number
+    public readonly title: Option<string>
 
     // Private Attributes //////////////////////////////////////////////////////
-    public readonly data: FolderData
+    // public readonly data: FolderData
     public children: (Folder | Bookmark)[] = []
 
     // Constructor /////////////////////////////////////////////////////////////
-    constructor(parent: Option<Folder>, data: ExtIFolder) {
-        this.parent = parent
+    constructor(parent: Option<Folder>, data: XIFolder) {
+        this._parent = parent
+
+        this.id = data.id
+        this.title = data.title
 
         // Remove `children` and set `data` attribute
         // eslint-disable-next-line
-        const { children, ...rest } = data
-        this.data = { ...rest }
+        // const { children, ...rest } = data
+        // this.data = { ...rest }
     }
 
     // Methods /////////////////////////////////////////////////////////////////
     public setParent(parent: Folder) {
-        this.parent = Some(parent)
+        this._parent = Some(parent)
     }
 
     public addChild(child: Folder | Bookmark) {
@@ -51,7 +58,7 @@ export class Folder {
         // Finde the item after which the child should be added
         let after: Folder | Bookmark | undefined
         if (typeof pos === 'number') {
-            after = this.children.find(c => c.data.id === pos)
+            after = this.children.find(c => c.id === pos)
 
         } else {
             after = this.children.find(c => c === pos)
@@ -75,8 +82,8 @@ export class Folder {
      */
     public toXbs(): IFolder {
         return {
-            id          : this.data.id,
-            title       : toValue(this.data.title),
+            id          : this.id,
+            title       : toValue(this.title),
             children    : this.children.map(c => c.toXbs()) // no children = []
         }
     }

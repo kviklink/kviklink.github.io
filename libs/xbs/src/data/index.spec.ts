@@ -1,15 +1,15 @@
 // Imports /////////////////////////////////////////////////////////////////////
 import { describe, it, expect } from 'vitest'
-import { XbsState } from '.'
+import { XbsData } from '.'
 import { None, Some } from 'ts-results'
-import { ExtIBookmark, ExtIFolder } from '../parser'
+import { XIBookmark, XIFolder } from '../parser'
 import { parse } from '../parser'
 
 // Tests ///////////////////////////////////////////////////////////////////////
 describe('state: basic functionality', () => {
     it('should create an empty bookmarks instance', async () => {
         // Execution
-        const state = XbsState.from([]).unwrap()
+        const state = XbsData.from([], '').unwrap()
 
         // Assertion
         expect(state.root.children).toEqual([])
@@ -18,9 +18,9 @@ describe('state: basic functionality', () => {
 
     it('should calculate the next id', () => {
         // Preparation
-        const data: (ExtIFolder | ExtIBookmark)[] = [
+        const data: (XIFolder | XIBookmark)[] = [
             {
-                type: 'bookmark',
+                _type: 'bookmark',
                 id: 1,
                 title: Some('1t'),
                 description: Some('1d'),
@@ -28,12 +28,12 @@ describe('state: basic functionality', () => {
                 tags: [],
             },
             {
-                type: 'folder',
+                _type: 'folder',
                 id: 2,
                 title: Some('2t'),
                 children: [
                     {
-                        type: 'bookmark',
+                        _type: 'bookmark',
                         id: 21,
                         title: Some('21t'),
                         description: Some('21d'),
@@ -41,7 +41,7 @@ describe('state: basic functionality', () => {
                         tags: [],
                     },
                     {
-                        type: 'folder',
+                        _type: 'folder',
                         id: 22,
                         title: Some('22t'),
                         children: [],
@@ -51,15 +51,16 @@ describe('state: basic functionality', () => {
         ]
 
         // Execution
-        const state = XbsState.from(data).unwrap()
+        const state = XbsData.from(data, '').unwrap()
 
         // Assert
         expect(state.nextId()).toBe(23)
     })
 
+
     it('should create xBrowserSync data (1)', () => {
         // Execution
-        const state = XbsState.from([]).unwrap()
+        const state = XbsData.from([], '').unwrap()
 
         // Assertion
         expect(state.toXbs()).toEqual([])
@@ -67,16 +68,16 @@ describe('state: basic functionality', () => {
 
     it('should create xBrowserSync data (2)', () => {
         // Execution
-        const state = XbsState.from([
+        const state = XbsData.from([
             {
-                type: 'bookmark',
+                _type: 'bookmark',
                 id: 1,
                 title: Some('1t'),
                 description: Some('1d'),
                 url: '1u',
                 tags: [],
             }
-        ]).unwrap()
+        ], '').unwrap()
 
         // Assertion
         expect(state.toXbs()).toEqual([
@@ -86,16 +87,16 @@ describe('state: basic functionality', () => {
 
     it('should create xBrowserSync data (3)', () => {
         // Execution
-        const state = XbsState.from([
+        const state = XbsData.from([
             {
-                type: 'bookmark',
+                _type: 'bookmark',
                 id: 1,
                 title: Some('1t'),
                 description: None,
                 url: '1u',
                 tags: [],
             }
-        ]).unwrap()
+        ], '').unwrap()
 
         // Assertion
         expect(state.toXbs()).toEqual([
@@ -105,9 +106,9 @@ describe('state: basic functionality', () => {
 
     it('should create xBrowserSync data (4)', () => {
         // Preparation
-        const data: (ExtIFolder | ExtIBookmark)[] = [
+        const data: (XIFolder | XIBookmark)[] = [
             {
-                type: 'bookmark',
+                _type: 'bookmark',
                 id: 1,
                 title: Some('1t'),
                 description: None,
@@ -115,12 +116,12 @@ describe('state: basic functionality', () => {
                 tags: [ 'test' ],
             },
             {
-                type: 'folder',
+                _type: 'folder',
                 id: 2,
                 title: Some('2t'),
                 children: [
                     {
-                        type: 'bookmark',
+                        _type: 'bookmark',
                         id: 21,
                         title: Some('21t'),
                         description: Some('21d'),
@@ -128,7 +129,7 @@ describe('state: basic functionality', () => {
                         tags: [],
                     },
                     {
-                        type: 'folder',
+                        _type: 'folder',
                         id: 22,
                         title: None,
                         children: [],
@@ -138,7 +139,7 @@ describe('state: basic functionality', () => {
         ]
 
         // Execution
-        const state = XbsState.from(data).unwrap()
+        const state = XbsData.from(data, '').unwrap()
 
         // Assert
         expect(state.toXbs()).toEqual([
@@ -159,6 +160,7 @@ describe('state: basic functionality', () => {
         ])
     })
 })
+
 
 describe('state: maintain xBrowserSync datastructure', () => {
     it('should not alter data structure (1)', () => {
@@ -182,7 +184,7 @@ describe('state: maintain xBrowserSync datastructure', () => {
         const parsed = parse(data).unwrap()
 
         // Execution
-        const state = XbsState.from(parsed).unwrap()
+        const state = XbsData.from(parsed, '').unwrap()
 
         // Assert
         expect(state.toXbs()).toEqual(data)
@@ -200,7 +202,7 @@ describe('state: maintain xBrowserSync datastructure', () => {
         const parsed = parse(data).unwrap()
 
         // Execution
-        const state = XbsState.from(parsed).unwrap()
+        const state = XbsData.from(parsed, '').unwrap()
 
         // Assert
         expect(state.toXbs()).toEqual(data)
@@ -221,7 +223,7 @@ describe('state: query datastructure', () => {
             const parsed = parse(data).unwrap()
 
             // Execution
-            const state = XbsState.from(parsed).unwrap()
+            const state = XbsData.from(parsed, '').unwrap()
             const result = state.findById(123)
 
             // Assertion
@@ -240,7 +242,7 @@ describe('state: query datastructure', () => {
             const parsed = parse(data).unwrap()
 
             // Execution
-            const state = XbsState.from(parsed).unwrap()
+            const state = XbsData.from(parsed, '').unwrap()
             const result = state.findBookmarkById(123)
 
             // Assertion
@@ -259,7 +261,7 @@ describe('state: query datastructure', () => {
             const parsed = parse(data).unwrap()
 
             // Execution
-            const state = XbsState.from(parsed).unwrap()
+            const state = XbsData.from(parsed, '').unwrap()
             const result = state.findFolderById(123)
 
             // Assertion
@@ -280,14 +282,17 @@ describe('state: query datastructure', () => {
             const parsed = parse(data).unwrap()
 
             // Execution
-            const state = XbsState.from(parsed).unwrap()
+            const state = XbsData.from(parsed, '').unwrap()
             const result = state.findById(21)
 
             // Assertion
             expect(result.some).toBe(true)
             if (result.some) {
-                expect(result.val.data).toEqual({
-                    type: 'bookmark',
+                const tmp = { ...result.val } as Record<string, unknown>
+                delete tmp._parent
+
+                expect(tmp).toEqual({
+                    _type: 'bookmark',
                     id: 21,
                     title: Some('21t'),
                     description: Some('21d'),
@@ -309,14 +314,15 @@ describe('state: query datastructure', () => {
             const parsed = parse(data).unwrap()
 
             // Execution
-            const state = XbsState.from(parsed).unwrap()
+            const state = XbsData.from(parsed, '').unwrap()
             const result = state.findById(2)
 
             // Assertion
             expect(result.some).toBe(true)
             if (result.some) {
-                expect(result.val.data).toEqual({
-                    type: 'folder',
+                const { _type, id, title } = result.val
+                expect({ _type, id, title }).toEqual({
+                    _type: 'folder',
                     id: 2,
                     title: Some('2t'),
                 })
@@ -335,14 +341,17 @@ describe('state: query datastructure', () => {
             const parsed = parse(data).unwrap()
 
             // Execution
-            const state = XbsState.from(parsed).unwrap()
+            const state = XbsData.from(parsed, '').unwrap()
             const result = state.findBookmarkById(21)
 
             // Assertion
             expect(result.some).toBe(true)
             if (result.some) {
-                expect(result.val.data).toEqual({
-                    type: 'bookmark',
+                const tmp = { ...result.val } as Record<string, unknown>
+                delete tmp._parent
+
+                expect(tmp).toEqual({
+                    _type: 'bookmark',
                     id: 21,
                     title: Some('21t'),
                     description: Some('21d'),
@@ -364,14 +373,15 @@ describe('state: query datastructure', () => {
             const parsed = parse(data).unwrap()
 
             // Execution
-            const state = XbsState.from(parsed).unwrap()
+            const state = XbsData.from(parsed, '').unwrap()
             const result = state.findFolderById(2)
 
             // Assertion
             expect(result.some).toBe(true)
             if (result.some) {
-                expect(result.val.data).toEqual({
-                    type: 'folder',
+                const { _type, id, title } = result.val
+                expect({ _type, id, title }).toEqual({
+                    _type: 'folder',
                     id: 2,
                     title: Some('2t'),
                 })
@@ -394,7 +404,7 @@ describe('state: manipulate datastructure', () => {
             const parsed = parse(data).unwrap()
 
             // Execution
-            const state = XbsState.from(parsed).unwrap()
+            const state = XbsData.from(parsed, '').unwrap()
             const folder = state.findFolderById(2).unwrap()
 
             const result = state.addBookmark(
@@ -425,7 +435,7 @@ describe('state: manipulate datastructure', () => {
             const parsed = parse(data).unwrap()
 
             // Execution
-            const state = XbsState.from(parsed).unwrap()
+            const state = XbsData.from(parsed, '').unwrap()
             const folder = state.root
 
             const result = state.addBookmark(
@@ -458,7 +468,7 @@ describe('state: manipulate datastructure', () => {
             const parsed = parse(data).unwrap()
 
             // Execution
-            const state = XbsState.from(parsed).unwrap()
+            const state = XbsData.from(parsed, '').unwrap()
             const folder = state.findFolderById(2).unwrap()
 
             const result = state.addFolder({ title: 'new folder'}, folder)
@@ -486,7 +496,7 @@ describe('state: manipulate datastructure', () => {
             const parsed = parse(data).unwrap()
 
             // Execution
-            const state = XbsState.from(parsed).unwrap()
+            const state = XbsData.from(parsed, '').unwrap()
             const folder = state.root
 
             const result = state.addFolder({}, folder)
@@ -516,7 +526,7 @@ describe('state: manipulate datastructure', () => {
             const parsed = parse(data).unwrap()
 
             // Execution
-            const state = XbsState.from(parsed).unwrap()
+            const state = XbsData.from(parsed, '').unwrap()
             const bookmark = state.findBookmarkById(3).unwrap()
             const folder = state.findFolderById(2).unwrap()
 
@@ -545,7 +555,7 @@ describe('state: manipulate datastructure', () => {
             const parsed = parse(data).unwrap()
 
             // Execution
-            const state = XbsState.from(parsed).unwrap()
+            const state = XbsData.from(parsed, '').unwrap()
             const result = state.move(21, -1)
 
             // Assertion
@@ -572,7 +582,7 @@ describe('state: manipulate datastructure', () => {
             const parsed = parse(data).unwrap()
 
             // Execution
-            const state = XbsState.from(parsed).unwrap()
+            const state = XbsData.from(parsed, '').unwrap()
             const bookmark = state.findBookmarkById(3).unwrap()
             const folder = state.findFolderById(2).unwrap()
 
@@ -601,7 +611,7 @@ describe('state: manipulate datastructure', () => {
             const parsed = parse(data).unwrap()
 
             // Execution
-            const state = XbsState.from(parsed).unwrap()
+            const state = XbsData.from(parsed, '').unwrap()
             const bookmark = state.findBookmarkById(1).unwrap()
             const folder = state.findFolderById(2).unwrap()
 
@@ -630,7 +640,7 @@ describe('state: manipulate datastructure', () => {
             const parsed = parse(data).unwrap()
 
             // Execution
-            const state = XbsState.from(parsed).unwrap()
+            const state = XbsData.from(parsed, '').unwrap()
             const result = state.moveTo(21, -1, 2)
 
             // Assertion
@@ -658,7 +668,7 @@ describe('state: manipulate datastructure', () => {
             const parsed = parse(data).unwrap()
 
             // Execution
-            const state = XbsState.from(parsed).unwrap()
+            const state = XbsData.from(parsed, '').unwrap()
             const f = state.findFolderById(4).unwrap()
             const folder = state.findFolderById(2).unwrap()
 
@@ -689,7 +699,7 @@ describe('state: manipulate datastructure', () => {
             const parsed = parse(data).unwrap()
 
             // Execution
-            const state = XbsState.from(parsed).unwrap()
+            const state = XbsData.from(parsed, '').unwrap()
             const result = state.move(4, 2)
 
             // Assertion
@@ -719,7 +729,7 @@ describe('state: manipulate datastructure', () => {
             const parsed = parse(data).unwrap()
 
             // Execution
-            const state = XbsState.from(parsed).unwrap()
+            const state = XbsData.from(parsed, '').unwrap()
             const f = state.findFolderById(4).unwrap()
             const folder = state.findFolderById(2).unwrap()
 
@@ -750,7 +760,7 @@ describe('state: manipulate datastructure', () => {
             const parsed = parse(data).unwrap()
 
             // Execution
-            const state = XbsState.from(parsed).unwrap()
+            const state = XbsData.from(parsed, '').unwrap()
             const f = state.findFolderById(4).unwrap()
             const bookmark = state.findBookmarkById(1).unwrap()
 
@@ -781,7 +791,7 @@ describe('state: manipulate datastructure', () => {
             const parsed = parse(data).unwrap()
 
             // Execution
-            const state = XbsState.from(parsed).unwrap()
+            const state = XbsData.from(parsed, '').unwrap()
             const result = state.moveTo(4, -1, 1)
 
             // Assertion
@@ -811,7 +821,7 @@ describe('state: manipulate datastructure', () => {
             const parsed = parse(data).unwrap()
 
             // Execution
-            const state = XbsState.from(parsed).unwrap()
+            const state = XbsData.from(parsed, '').unwrap()
 
             const result = state.remove(3)
 
@@ -839,7 +849,7 @@ describe('state: manipulate datastructure', () => {
             const parsed = parse(data).unwrap()
 
             // Execution
-            const state = XbsState.from(parsed).unwrap()
+            const state = XbsData.from(parsed, '').unwrap()
             const target = state.findById(3).unwrap()
 
             const result = state.remove(target)
@@ -868,7 +878,7 @@ describe('state: manipulate datastructure', () => {
             const parsed = parse(data).unwrap()
 
             // Execution
-            const state = XbsState.from(parsed).unwrap()
+            const state = XbsData.from(parsed, '').unwrap()
 
             const result = state.remove(2)
 
@@ -894,7 +904,7 @@ describe('state: manipulate datastructure', () => {
             const parsed = parse(data).unwrap()
 
             // Execution
-            const state = XbsState.from(parsed).unwrap()
+            const state = XbsData.from(parsed, '').unwrap()
             const target = state.findById(2).unwrap()
 
             const result = state.remove(target)

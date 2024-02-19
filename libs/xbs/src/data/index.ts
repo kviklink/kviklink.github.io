@@ -4,22 +4,27 @@ export * from './folder'
 
 // Imports /////////////////////////////////////////////////////////////////////
 import { Result, Ok, Err, None, Option, Some } from 'ts-results'
-import { v4 as uuidv4 } from 'uuid'
 import { Folder } from './folder';
 import { Bookmark } from './bookmark';
 import { transformBookmark, transformFolder } from '../parser'
 import type {
-    IXbsData, ExtIFolder, ExtIBookmark, IFolder, IBookmark
+    IXbsData, XIFolder, XIBookmark, IFolder, IBookmark
 } from '../parser'
 
-// XbsState ////////////////////////////////////////////////////////////////////
-export class XbsState {
+// XbsData /////////////////////////////////////////////////////////////////////
+export class XbsData {
     // Attributes //////////////////////////////////////////////////////////////
     public readonly root: Folder
 
+    // The 'lastUpdated' value must always be sent to the API when the data
+    // is updated. It basically tells the backend, how "old" the data is that
+    // the request is sending. This is to prevent overwriting newer updates.
+    public readonly lastUpdated: string
+
     // Constructor /////////////////////////////////////////////////////////////
-    public constructor(root: Folder) {
+    public constructor(root: Folder, lastUpdated: string) {
         this.root = root
+        this.lastUpdated = lastUpdated
     }
 
     // Public Methods //////////////////////////////////////////////////////////
@@ -45,16 +50,11 @@ export class XbsState {
             const node = queue.shift()!
 
             // Check if ID is larger
-            if (node.data.id > largestId) { largestId = node.data.id }
+            if (node.id > largestId) { largestId = node.id }
 
             // If node is a folder, add its children to the queue
             if (node instanceof Folder) {
-                for (const child of node.children) {
-                    // if (!visited.has(child.data.id)) {
-                        // visited.add(child.data.id)
-                        queue.push(child)
-                    // }
-                }
+                queue.push(...node.children)
             }
         }
 
@@ -75,16 +75,11 @@ export class XbsState {
             const node = queue.shift()!
 
             // Check if id matches
-            if (node.data.id === id) { return Some(node) }
+            if (node.id === id) { return Some(node) }
 
-            // Add children to queue
+            // If node is a folder, add its children to the queue
             if (node instanceof Folder) {
-                for (const child of node.children) {
-                    // if (!visited.has(child.data.id)) {
-                        // visited.add(child.data.id)
-                        queue.push(child)
-                    // }
-                }
+                queue.push(...node.children)
             }
         }
 
@@ -97,24 +92,19 @@ export class XbsState {
     public findFolderById(id: number): Option<Folder> {
         // Breadth first search
         const queue: Folder[] = [ this.root ]
-        // const visited: Set<number> = new Set([ this.root.data.id ])
 
         while (queue.length > 0) {
             // Get first node from queue
             const node = queue.shift()!
 
             // Check if id matches
-            if (node.data.id === id) { return Some(node) }
+            if (node.id === id) { return Some(node) }
 
             // Otherwise, add children to queue
             for (const child of node.children) {
                 // Skip non-folder children
                 if (!(child instanceof Folder)) { continue }
-
-                // if (!visited.has(child.data.id)) {
-                    // visited.add(child.data.id)
-                    queue.push(child)
-                // }
+                queue.push(child)
             }
         }
 
@@ -135,20 +125,40 @@ export class XbsState {
 
             if (node instanceof Bookmark) {
                 // Check if id matches
-                if (node.data.id === id) { return Some(node) }
+                if (node.id === id) { return Some(node) }
 
             } else {
-                for (const child of node.children) {
-                    // if (!visited.has(child.data.id)) {
-                        // visited.add(child.data.id)
-                        queue.push(child)
-                    // }
-                }
+                queue.push(...node.children)
             }
         }
 
         return None
     }
+
+    /**
+     * 
+     */
+    public findAllBookmarks(): Bookmark[] {
+        // Breadth first serach
+        const queue: (Folder | Bookmark)[] = [ this.root ]
+
+        const result: Bookmark[] = []
+
+        while (queue.length > 0) {
+            // Get first node from queue
+            const node = queue.shift()!
+
+            if (node instanceof Bookmark) {
+                result.push(node)
+
+            } else {
+                queue.push(...node.children)
+            }
+        }
+
+        return result
+    }
+
 
     /**
      * Adds a bookmark with the given information to the state.
@@ -248,8 +258,8 @@ export class XbsState {
         }
 
         // Move (delete src from its parent; add to new destination)
-        if (src.parent.none) { return Err('source has no parent') }
-        src.parent.val.removeChild(src)
+        if (src._parent.none) { return Err('source has no parent') }
+        src._parent.val.removeChild(src)
         dst.addChild(src)
 
         // Return
@@ -288,8 +298,8 @@ export class XbsState {
         }
 
         // Move (delete src from its parent; add to new destination)
-        if (src.parent.none) { return Err('source has no parent') }
-        src.parent.val.removeChild(src)
+        if (src._parent.none) { return Err('source has no parent') }
+        src._parent.val.removeChild(src)
         dst.addChildAfter(src, after)
 
         // Return
@@ -316,8 +326,8 @@ export class XbsState {
         }
 
         // Remove target from its parent
-        if (tar.parent.none) { return Err('target has no parent') }
-        tar.parent.val.removeChild(tar)
+        if (tar._parent.none) { return Err('target has no parent') }
+        tar._parent.val.removeChild(tar)
 
         // Return
         return Ok(tar)
@@ -356,13 +366,16 @@ export class XbsState {
     // Static Methods //////////////////////////////////////////////////////////
 
     /**
-     * Create {@link XbsState} from {@link IXbsData}, which is the return value
+     * Create {@link XbsData} from {@link IXbsData}, which is the return value
      * from the `parse` function.
      */
-    public static from(data: IXbsData): Result<XbsState, string> {
+    public static from(
+        data: IXbsData,
+        lastUpdated: string
+    ): Result<XbsData, string> {
         // Create a root folder which wraps around the input data.
-        const root: ExtIFolder = {
-            type: 'folder',
+        const root: XIFolder = {
+            _type: 'folder',
             id: -1,
             title: None,
             children: data, // <- input data as children of root folder
@@ -370,71 +383,80 @@ export class XbsState {
 
         // Define metadata for traversal/discovery (depth first search).
         interface Metadata {
-            // Node uuid
-            uuid: string,
-            // Parent uuid
+            // Parent id
             parent: Option<number>,
             // Data
-            data: ExtIFolder | ExtIBookmark
+            data: XIFolder | XIBookmark
         }
 
         /**
-         * Traverse data structure (depth first search) and discover all nodes.
-         * During this process metadata is added (uuid and parent-uuid) for the
-         * next processing step.
+         * Traverse data structure (breadth first search) to discover all nodes.
+         * During traversal parent-information is added to the nodes (for next
+         * step).
+         * This traversal needs to be breadth first search, because before the
+         * next step we need to remove the root nodes (multiple!) from the
+         * result array of this first step. Breadth first search ensures that
+         * these root nodes are the first ones in the `nodes` array.
+         *
+         * The breadth first search also assures that the order of all entries
+         * is kept throughout the process of parsing the tree-structured data.
          */
-        const stack: Metadata[] = [{ uuid: uuidv4(), parent: None, data: root }]
-        // const discovered: Set<string> = new Set()
+        const queue: Metadata[] = [ {parent: None, data: root } ]
+
+        // Result of the traversal
         const nodes: Metadata[] = []
 
-        while (stack.length > 0) {
-            // Get upper stack item
-            const node = stack.pop()!
+        // Traversal
+        while (queue.length > 0) {
+            // Get next queue item
+            const node = queue.shift()!
+            nodes.push(node)
 
-            // If node was not discovered yet...
-            // if (!discovered.has(node.uuid)) {
-                // Mark node as discovered and add it to the nodes array
-                // discovered.add(node.uuid)
-                nodes.push(node)
+            // If node is a folder, add its children to the stack
+            if (node.data._type === 'folder') {
+                // Node data type guard
+                const nodeData = node.data as XIFolder;
 
-                // If node is a folder, add its children to the stack
-                if (node.data.type === 'folder') {
-                    // Iterate children
-                    for (const child of node.data.children) {
-                        // Add to the bottom of the stack (to keep the order)
-                        stack.unshift({
-                            uuid    : uuidv4(),
-                            parent  : Some(node.data.id),
-                            data    : child,
-                        })
-                    }
-                }
-            // }
+                // Add children to queue
+                queue.push(...nodeData.children.map(c => { return {
+                    parent: Some(nodeData.id),
+                    data  : c
+                }}))
+            }
         }
 
         // Ensure unique ids
         const ids = new Set(nodes.map(n => n.data.id))
-        if (ids.size !== nodes.length) {
-            return Err('duplicate ids')
-        }
+        if (ids.size !== nodes.length) { return Err('duplicate ids') }
 
         /**
-         * The depth first traversal discovered all nodes in depth-first order.
-         * This means that the parents are always discovered before their
-         * children. Therefore we an no initialize the state and iteratively
-         * add all the nodes into the state.
+         * The first step discovered all nodes. Parents are always discovered
+         * before their children. This is important for the next step, because
+         * when adding an item to "the datastructure" its parent must already
+         * be present in the data.
          */
-        const state = new XbsState(new Folder(None, root))
-        nodes.shift() // this removes the first node (= root node) from the list
 
+        // Take the first data.length items from the nodes array (because these
+        // are the root elements with no parents). This mutates the nodes array.
+        nodes.shift()
+        // const roots = nodes.splice(0, data.length)
+
+        // Initialize the state with the roots
+        const state = new XbsData(new Folder(None, root), lastUpdated)
+
+        // Iterate nodes
         for (const node of nodes) {
             // If node is a folder
-            if (node.data.type === 'folder') {
+            if (node.data._type === 'folder') {
+                // Type guard
+                const nodeData = node.data as XIFolder
+
                 // Create a folder
-                const folder = new Folder(None, node.data)
+                const folder = new Folder(None, nodeData)
 
                 // Validate parent id
                 if (node.parent.none) {
+                    console.log(node)
                     return Err('something went wrong: no parent for folder')
                 }
 
@@ -446,8 +468,11 @@ export class XbsState {
             }
             // Else, it's a bookmark
             else {
+                // Type guard
+                const nodeData = node.data as XIBookmark
+
                 // Create bookmark
-                const bookmark = new Bookmark(None, node.data)
+                const bookmark = new Bookmark(None, nodeData)
 
                 // Validate parent id
                 if (node.parent.none) {

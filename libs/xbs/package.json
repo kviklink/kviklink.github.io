@@ -21,7 +21,6 @@
         "lzutf8": "^0.6.3",
         "ts-results": "^3.3.0",
         "ts-results-utils": "workspace:*",
-        "uuid": "^9.0.1",
         "zod": "^3.22.4"
     },
     "devDependencies": {

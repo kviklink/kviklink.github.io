@@ -13,7 +13,7 @@ import { z } from 'zod'
 export async function getSyncVersion(
     baseUrl: string,
     syncId: string,
-): Promise<Result<GetBookmarksLastUpdatedRes, Report>> {
+): Promise<Result<GetBookmarksVersionRes, Report>> {
     // Make request
     const res = await Result.wrapAsync(() => ky.get(
         `bookmarks/${syncId}/version`,
@@ -21,21 +21,21 @@ export async function getSyncVersion(
     ))
 
     if (res.err) {
-        return Err(Report.from(res.val).add(new GetLastUpdatedError()))
+        return Err(Report.from(res.val).add(new GetVersionError()))
     }
 
     // Get JSON response
     const json = await Result.wrapAsync(() => res.val.json())
 
     if (json.err) {
-        return Err(Report.from(json.val).add(new GetLastUpdatedError()))
+        return Err(Report.from(json.val).add(new GetVersionError()))
     }
 
     // Validate and parse response
-    const resData = GetBookmarksLastUpdatedResSchema.safeParse(json.val)
+    const resData = GetBookmarksVersionResSchema.safeParse(json.val)
 
     if (!resData.success) {
-        return Err(Report.from(resData.error).add(new GetLastUpdatedError()))
+        return Err(Report.from(resData.error).add(new GetVersionError()))
     }
 
     // Return
@@ -46,17 +46,17 @@ export async function getSyncVersion(
 /**
  * Result data from getting bookmarks.
  */
-const GetBookmarksLastUpdatedResSchema = z.object({
+const GetBookmarksVersionResSchema = z.object({
     // Version number of the xBrowserSync client used to create the sync
     version : z.string(),
 })
 
-export type GetBookmarksLastUpdatedRes = z
-    .infer<typeof GetBookmarksLastUpdatedResSchema>
+export type GetBookmarksVersionRes = z
+    .infer<typeof GetBookmarksVersionResSchema>
 
 // Error ///////////////////////////////////////////////////////////////////////
-export class GetLastUpdatedError extends Error {
-    constructor() { super('failed to get last updated timestamp') }
+export class GetVersionError extends Error {
+    constructor() { super('failed to get sync version') }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

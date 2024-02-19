@@ -2,6 +2,7 @@
 import Fuse from 'fuse.js'
 import { inspect } from 'util'
 import { Option, Some, None } from 'ts-results'
+import { XbsBuilder } from 'xbs'
 
 // Main ////////////////////////////////////////////////////////////////////////
 interface IBookmark {
@@ -118,39 +119,19 @@ const items: Item[] = [
 
 
 async function main() {
-
-
     // const fuse = new Fuse(data, {
     //     includeScore: true,
+    //     includeMatches: true,
     //     keys: ['title', 'description', 'tags', 'url']
     // })
 
-    // console.log(inspect(fuse.search(''), false, null, true))
+    // const res = fuse.search('asd')
 
+    // console.log(inspect(res, false, null, true))
 
-    const stack: Item[] = items.reverse()
-    console.log(stack)
-
-    const result: Item[] = []
-
-    while (stack.length > 0) {
-        // Get item from stack
-        const item = stack.pop()!
-
-        // Add item to results
-        result.push({ id: item.id, children: [], parents: item.parents })
-
-        // Inject "parent"-information into children
-        item.children.map(c => c.parents = [...(item.parents || []), item.id])
-
-        // Add children to stack
-        stack.push(...item.children.reverse())
-
-    }
-
-    console.log(
-        result.map(x => `${ [...(x.parents || []), (x.id)].join('/')}`)
-    )
+    const x = Date.parse('2024-02-18T08:26:50.100Z')
+    console.log(x)
+    console.log(Date.now())
 }
 
 ////////////////////////////////////////////////////////////////////////////////

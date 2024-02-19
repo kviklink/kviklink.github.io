@@ -2,7 +2,7 @@
 export * from './xbs'
 
 // Imports /////////////////////////////////////////////////////////////////////
-import type { Result } from 'ts-results'
+import type { Result, Option } from 'ts-results'
 
 // Types ///////////////////////////////////////////////////////////////////////
 export const BACKENDS = ['xbs', 'raindrop'] as const
@@ -70,7 +70,8 @@ export interface IBackend extends IBookmarkReader {
 }
 
 export interface IBookmarkReader {
-    get: () => Promise<Result<IBookmark[], string>>,
+    get: (force?: boolean) => Promise<Result<IBookmark[], string>>,
+    findBookmarkById: (id: number)  => Promise<Result<Option<IBookmark>, string>>,
 }
 
 export interface IBookmarkManager {

@@ -1,13 +1,13 @@
 // Re-Exports //////////////////////////////////////////////////////////////////
 export { XbsBuilder } from './builder'
-export { Folder, Bookmark } from './state'
+export { Folder, Bookmark } from './data'
 
 // Imports /////////////////////////////////////////////////////////////////////
-import { Err, None, Ok, Option, Result, Some } from 'ts-results'
-import { XbsState, Bookmark, Folder } from './state'
+import { Err, None, Ok, Option, Result } from 'ts-results'
+import { XbsData } from './data'
 import { CryptoUtils } from './utils'
 import { type IBookmark, type IFolder, parse } from './parser'
-import { getBookmarks, updateBookmarks } from './api'
+import { getBookmarks, getLastUpdated, updateBookmarks, } from './api'
 
 // Class ///////////////////////////////////////////////////////////////////////
 
@@ -21,7 +21,7 @@ export class Xbs {
     public readonly syncId: string
     public readonly base64key: string
 
-    private state: Option<XbsState> = None
+    // Cached 'lastUpdated' value from last GET request
     private lastUpdated: Option<string> = None
 
     // Constructor /////////////////////////////////////////////////////////////
@@ -72,17 +72,18 @@ export class Xbs {
         return Ok(encResult.val)
     }
 
+    // Public Methods //////////////////////////////////////////////////////////
+
     /**
-     * Get the bookmark data from xBrowserSync and set the internal state of
-     * this library.
+     * Get the bookmark data from xBrowserSync.
      */
-    private async setState(): Promise<Result<XbsState, string>> {
+    public async get(): Promise<Result<XbsData, string>> {
         // Get data from API
-        const data = await getBookmarks(this.baseUrl, this.syncId)
-        if (data.err) { return Err(data.val.getErrors()[0].message) }
+        const res = await getBookmarks(this.baseUrl, this.syncId)
+        if (res.err) { return Err(res.val.getErrors()[0].message) }
 
         // Decrypt data
-        const dec = await this.decrypt(data.val.bookmarks)
+        const dec = await this.decrypt(res.val.bookmarks)
         if (dec.err) { return Err(dec.val) }
 
         // Parse decrypted data
@@ -90,37 +91,24 @@ export class Xbs {
         if (par.err) { return Err(par.val.toString()) }
 
         // Create and set state
-        const state = XbsState.from(par.val)
-        if (state.err) { return Err(state.val) }
-
-        // Set state and last updated
-        this.state = Some(state.val)
-        this.lastUpdated = Some(data.val.lastUpdated)
+        const data = XbsData.from(par.val, res.val.lastUpdated)
+        if (data.err) { return Err(data.val) }
 
         // Return
-        return Ok(state.val)
+        return Ok(data.val)
     }
 
     /**
-     * Take the internal state of this library and update the remote data of
-     * xBrowserSync.
+     * Update bookmars on xBrowserSync.
      */
-    private async uploadState(): Promise<Result<null, string>> {
-        // Get state and last updated
-        if (this.state.none) { return Err('no state') }
-        if (this.lastUpdated.none) { return Err('no last upadted') }
-
-        // Get data from state
-        const data = this.state.val.toXbs()
-
+    public async put(data: XbsData): Promise<Result<null, string>> {
         // Encrypt the data
-        const enc = await this.encrypt(data)
+        const enc = await this.encrypt(data.toXbs())
         if (enc.err) { return Err(enc.val) }
 
         // Send request to API
         const res = await updateBookmarks(this.baseUrl, this.syncId, {
-            bookmarks: enc.val,
-            lastUpdated: this.lastUpdated.val
+            bookmarks: enc.val, lastUpdated: data.lastUpdated,
         })
         if (res.err) { return Err(res.val.getErrors()[0].message) }
 
@@ -128,36 +116,17 @@ export class Xbs {
         return Ok(null)
     }
 
-    // Public Methods //////////////////////////////////////////////////////////
-
-    public async get(): Promise<Result<(Folder | Bookmark)[], string>> {
-        // Set (and return) state
-        const state = await this.setState()
-        if (state.err) { return Err(state.val) }
+    /**
+     * Get lastUpdated
+     */
+    public async getLastUpdated(): Promise<Result<string, string>> {
+        // Get data from API
+        const res = await getLastUpdated(this.baseUrl, this.syncId)
+        if (res.err) { return Err(res.val.toString()) }
 
         // Return
-        return Ok(state.val.root.children)
+        return Ok(res.val.lastUpdated)
     }
-
-    // public async move(src: number, dst: number): Promise<Result<null, string>> {
-    //     // Get state first
-    //     if (this.state.none) {
-    //         const set = await this.setState()
-    //         if (set.err) { return Err(set.val) }
-    //     }
-
-    //     // Make sure the state was actually set
-    //     if (this.state.none) { return Err('internal error') }
-
-    //     // Mutate state
-    //     const succ = this.state.val.move(src, dst)
-    //     if (succ.err) { return Err(succ.val) }
-
-    //     // Upload state
-    //     const res = await this.uploadState()
-    //     if (res.err) { return Err(res.val) }
-    //     return Ok(null)
-    // }
 
     ////////////////////////////////////////////////////////////////////////////
 }

@@ -1,5 +1,5 @@
 // Imports /////////////////////////////////////////////////////////////////////
-import { ExtIBookmark, ExtIFolder, parse } from '.'
+import { XIBookmark, XIFolder, parse } from '.'
 import { describe, it, expect } from 'vitest'
 import { None } from 'ts-results'
 
@@ -43,7 +43,7 @@ describe('parser: parse bookmark', () => {
         expect(result.ok).toBe(true)
 
         if (result.ok) {
-            const bm = result.val[0] as ExtIBookmark
+            const bm = result.val[0] as XIBookmark
             expect(bm.title).toEqual(None)
             expect(bm.description).toEqual(None)
             expect(bm.tags).toEqual([])
@@ -112,7 +112,7 @@ describe('parser: parse folder', () => {
         expect(result.ok).toBe(true)
 
         if (result.ok) {
-            const bm = result.val[0] as ExtIFolder
+            const bm = result.val[0] as XIFolder
             expect(bm.children).toEqual([])
         }
     })
@@ -194,28 +194,28 @@ describe('parser: transformation', () => {
 
         if (result.ok) {
             // Folder 1
-            const f1 = result.val[0] as ExtIFolder
-            expect(f1.type).toBe('folder')
+            const f1 = result.val[0] as XIFolder
+            expect(f1._type).toBe('folder')
 
             // Folder 1 - child 1 + 2
-            expect(f1.children[0].type).toBe('bookmark')
-            expect(f1.children[1].type).toBe('bookmark')
+            expect(f1.children[0]._type).toBe('bookmark')
+            expect(f1.children[1]._type).toBe('bookmark')
 
             // Root-level bookmark
-            const b1 = result.val[1] as ExtIBookmark
-            expect(b1.type).toBe('bookmark')
+            const b1 = result.val[1] as XIBookmark
+            expect(b1._type).toBe('bookmark')
 
             // Folder 2
-            const f2 = result.val[2] as ExtIFolder
-            expect(f2.type).toBe('folder')
+            const f2 = result.val[2] as XIFolder
+            expect(f2._type).toBe('folder')
 
             // Folder 2 - child 1
-            expect(f2.children[0].type).toBe('bookmark')
+            expect(f2.children[0]._type).toBe('bookmark')
 
             // Folder 2 - child 2 (folder 3)
-            const f3 = f2.children[1] as ExtIFolder
-            expect(f3.type).toBe('folder')
-            expect(f3.children[0].type).toBe('bookmark')
+            const f3 = f2.children[1] as XIFolder
+            expect(f3._type).toBe('folder')
+            expect(f3.children[0]._type).toBe('bookmark')
         }
     })
 })

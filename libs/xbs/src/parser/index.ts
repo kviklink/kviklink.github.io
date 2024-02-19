@@ -43,8 +43,8 @@ export type IFolder = z.infer<typeof SFolderBase> & {
 
 
 // Data Transformation /////////////////////////////////////////////////////////
-export interface ExtIBookmark {
-    readonly type        : 'bookmark'
+export interface XIBookmark {
+    readonly _type       : 'bookmark'
     readonly id          : number
     readonly title       : Option<string>
     readonly description : Option<string>
@@ -52,21 +52,21 @@ export interface ExtIBookmark {
     readonly tags        : string[]
 }
 
-export interface ExtIFolder {
-    readonly type        : 'folder'
+export interface XIFolder {
+    readonly _type       : 'folder'
     readonly id          : number
     readonly title       : Option<string>
-    readonly children    : (ExtIBookmark | ExtIFolder)[]
+    readonly children    : (XIBookmark | XIFolder)[]
 }
 
 /**
  * This function recursively transforms
- * {@link IBookmark}    to {@link ExtIBookmark} and
- * {@link IFolder}      to {@link ExtIFolder}.
+ * {@link IBookmark}    to {@link XIBookmark} and
+ * {@link IFolder}      to {@link XIFolder}.
  */
 function transformation(
     input: (IFolder | IBookmark)[]
-): (ExtIBookmark | ExtIFolder)[] {
+): (XIBookmark | XIFolder)[] {
     return input.map(i => {
         // Type-guard
         const item = i as (IFolder & IBookmark)
@@ -83,10 +83,13 @@ function transformation(
     })
 }
 
-export function transformBookmark(item: IBookmark): ExtIBookmark {
+/**
+ * Transform a raw bookmark into the extended bookmark interface with safe types
+ */
+export function transformBookmark(item: IBookmark): XIBookmark {
     const { title, description, tags, ...rest } = item as IBookmark
     return {
-        type: 'bookmark',
+        _type: 'bookmark',
         title: toOption(title),
         description: toOption(description),
         tags: tags || [],
@@ -94,10 +97,13 @@ export function transformBookmark(item: IBookmark): ExtIBookmark {
     }
 }
 
-export function transformFolder(item: IFolder): ExtIFolder {
+/**
+ * Transform a raw folder into the extended folder interface with safe types
+ */
+export function transformFolder(item: IFolder): XIFolder {
     const { title, children, ...rest } = item as IFolder
     return {
-        type: 'folder',
+        _type: 'folder',
         title: toOption(title),
         children: children ? transformation(children) : [],
         ...rest
@@ -107,7 +113,7 @@ export function transformFolder(item: IFolder): ExtIFolder {
 
 // Parse Function //////////////////////////////////////////////////////////////
 /**
- * The root schema
+ * The root schema (DataTree ???)
  */
 const SXbsData = SBookmark.or(SFolder).array().transform(transformation)
 export type IXbsData = z.infer<typeof SXbsData>
