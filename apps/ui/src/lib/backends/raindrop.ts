@@ -93,6 +93,7 @@ export class RaindropBackend implements IBackend {
             this.cache.some &&                              // cache set?
             (Date.now() - this.cacheAge) < CACHE_THRESHOLD  // cache valid?
         ) {
+            console.log('[CACHE HIT] RaindropBackend')
             return Ok(this.cache.val)
 
         } else {
@@ -102,8 +103,6 @@ export class RaindropBackend implements IBackend {
                 this.rdc.getAllRaindrops()
             ]))
             if (results.err) { return Err('requests to API failed') }
-
-            console.log(await this.rdc.getAllRaindrops())
 
             const collections = results.val[0]
             const raindrops = results.val[1]
@@ -121,6 +120,7 @@ export class RaindropBackend implements IBackend {
 
             // Set cache
             this.cache = Some(result)
+            this.cacheAge = Date.now()
 
             // Return
             return Ok(result)
@@ -165,7 +165,6 @@ export class RaindropBackend implements IBackend {
 
         // Perform search
         const bookmarks = data.val.raindrops
-        console.log(data.val.collectionIndex.values())
 
         // Transform and return
         return Ok(bookmarks.map(item => { return {

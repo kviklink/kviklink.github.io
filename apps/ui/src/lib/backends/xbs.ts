@@ -109,6 +109,7 @@ export class XbsBackend implements IBackend {
             this.cache.some &&                              // cache set?
             (Date.now() - this.cacheAge) < CACHE_THRESHOLD  // cache valid?
         ) {
+            console.log('[CACHE HIT] XbsBackend')
             return Ok(this.cache.val)
 
         } else {
