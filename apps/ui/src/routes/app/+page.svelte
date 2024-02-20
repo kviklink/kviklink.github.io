@@ -1,14 +1,39 @@
 <!-- Script ---------------------------------------------------------------- -->
 <script lang="ts">
     import * as Command from '$lib/components/ui/command';
+    import { createState } from 'cmdk-sv'
     import { Button } from '$lib/components/ui/button';
     import backend from '$lib/state/backend.svelte';
     import credentials from '$lib/state/credentials.svelte';
     import { XbsBackendBuilder, type IBookmark, RaindropBackendBuilder } from '$lib/backends';
     import { goto } from '$app/navigation';
+    import { onMount } from 'svelte';
+    import Fuse from 'fuse.js';
 
     let input = $state('')
     let bookmarks: IBookmark[] = $state([])
+
+    let fuse = $derived(new Fuse(bookmarks, {
+        keys: ['title', 'description', 'metadata.hostname']
+    }))
+
+    $effect(() => {
+        fuse;
+        console.log("fuse created")
+    })
+
+    let searchResults: IBookmark[] = $derived(
+        fuse.search(input).slice(0, 6).map(x => x.item)
+    )
+
+    $effect(() => {
+        searchResults;
+        console.log("search results updated")
+    })
+
+    // TODO: vllt nicht im backen alle pages batchen sondern das hier
+    // alles page für page machen, pro page den state updaten und durch den
+    // effect/derive werden dann die Suchergebnisse kontinuierlich geupdated?
 
     async function check(): Promise<boolean> {
         // If backend set -> continue with it
@@ -48,11 +73,12 @@
         goto('/login', { replaceState: true })
     }
 
-    // On mount
-    $effect(() => {
-        console.log("[EFFECT RUN] -----------------------------------------")
+    onMount(() => {
+        console.log("[ON MOUNT] -----------------------------------------")
         check().then(success => {
             if (!success) { gotoLogin(); return }
+
+            // Fetch data
             backend.data.unwrap().get().then(data => {
                 if (data.err) {
                     console.log("error while fetching bookmarks:", data.val)
@@ -71,21 +97,26 @@
 
 <!-- HTML ------------------------------------------------------------------ -->
 
-    <img
-        class="w-5 h-5"
-        src="https://icon.horse/icon/discord.com"
-        alt="icon"
-    />
-
-
 <div class="w-full mt-16 flex justify-center">
-<Command.Root class="w-[600px] border rounded-lg" shouldFilter={false}>
+<Command.Root class="w-[600px] border rounded-lg" loop shouldFilter={false} onkeydown={(e: KeyboardEvent) => {
+    // if (e.shiftKey === true && e.key === 'J') {
+    //     e.preventDefault()
+    //     console.log('move down')
+    // }
+
+    // if (e.shiftKey === true && e.key === 'K') {
+    //     e.preventDefault()
+    //     console.log('move up')
+    // }
+}}>
     <Command.Input placeholder="Type a command or search..." bind:value={input} />
     <Command.List>
 
         <Command.Group heading="Bookmarks" alwaysRender>
-            {#each bookmarks as b}
-                <Command.Item class="flex space-x-2">
+            {#each searchResults as b}
+                <Command.Item class="flex space-x-2" onSelect={() => {
+                    window.open(b.url, '_blank')
+                }}>
                     <img
                         class="w-5 h-5 rounded-sm"
                         src="https://icon.horse/icon/{b.metadata.hostname}"
@@ -100,10 +131,12 @@
         </Command.Group>
         <Command.Separator />
         <Command.Group heading="Web Search" alwaysRender>
-            <Command.Item alwaysRender class="flex space-x-2">
+            <Command.Item alwaysRender class="flex space-x-2" onSelect={() => {
+                window.open(`https://duckduckgo.com/?q=${input}`)
+            }}>
                 <img
-                    class="w-5 h-5"
-                    src="https://icon.horse/icon/google.com"
+                    class="w-5 h-5 rounded-sm"
+                    src="https://icon.horse/icon/duckduckgo.org"
                     alt="icon"
                 />
 

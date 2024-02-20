@@ -25,7 +25,8 @@
         "xbs": "workspace:*",
         "zod": "^3.22.4",
         "ts-results-utils": "workspace:*",
-        "raindrop": "workspace:*"
+        "raindrop": "workspace:*",
+        "fuse.js": "^7.0.0"
     },
     "devDependencies": {
         "@playwright/test": "^1.28.1",
