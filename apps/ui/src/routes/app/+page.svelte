@@ -17,19 +17,9 @@
         keys: ['title', 'description', 'metadata.hostname']
     }))
 
-    $effect(() => {
-        fuse;
-        console.log("fuse created")
-    })
-
     let searchResults: IBookmark[] = $derived(
         fuse.search(input).slice(0, 6).map(x => x.item)
     )
-
-    $effect(() => {
-        searchResults;
-        console.log("search results updated")
-    })
 
     // TODO: vllt nicht im backen alle pages batchen sondern das hier
     // alles page für page machen, pro page den state updaten und durch den
@@ -74,7 +64,7 @@
     }
 
     onMount(() => {
-        console.log("[ON MOUNT] -----------------------------------------")
+        console.log("[app][onMount] -----------------------------------------")
         check().then(success => {
             if (!success) { gotoLogin(); return }
 
@@ -136,7 +126,7 @@
             }}>
                 <img
                     class="w-5 h-5 rounded-sm"
-                    src="https://icon.horse/icon/duckduckgo.org"
+                    src="https://icon.horse/icon/duckduckgo.com"
                     alt="icon"
                 />
 

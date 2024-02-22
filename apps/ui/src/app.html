@@ -3,8 +3,27 @@
     <head>
         <meta charset="utf-8" />
         <link rel="icon" href="%sveltekit.assets%/favicon.svg" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="manifest" href="%sveltekit.assets%/manifest.json" />
         %sveltekit.head%
+
+        <!-- Prevent auto-zoom on mobile Safari -->
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, maximum-scale=1"
+        />
+
+        <!-- Status bar color (PWA on iOS) -->
+        <!-- <meta
+            name="theme-color"
+            media="(prefers-color-scheme: light)"
+            content="white"
+        />
+        <meta
+            name="theme-color"
+            media="(prefers-color-scheme: dark)"
+            content="#111827"
+        /> -->
+
     </head>
     <body data-sveltekit-preload-data="hover" class="[&::-webkit-scrollbar]:hidden [-ms-overflow-style]:none [scrollbar-width]:none">
         <div style="display: contents">%sveltekit.body%</div>

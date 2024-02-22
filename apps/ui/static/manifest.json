@@ -1,0 +1,30 @@
+{
+    "name": "[kvik]link",
+    "short_name": "kviklink",
+    "start_url": "/",
+    "display": "standalone",
+    "description": "[kvik]link",
+    "icons": [
+        {
+          "src": "favicon.svg",
+          "sizes": "any",
+          "type": "image/svg"
+        },
+        {
+          "src": "favicon.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        },
+        {
+          "src": "favicon.png",
+          "sizes": "512x512",
+          "type": "image/png"
+        },
+        {
+          "src": "favicon.png",
+          "sizes": "512x512",
+          "type": "image/png",
+          "purpose": "maskable"
+        }
+    ]
+}
