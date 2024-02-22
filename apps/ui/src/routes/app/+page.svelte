@@ -65,6 +65,8 @@
 
     onMount(() => {
         console.log("[app][onMount] -----------------------------------------")
+        
+
         check().then(success => {
             if (!success) { gotoLogin(); return }
 
@@ -99,7 +101,7 @@
     //     console.log('move up')
     // }
 }}>
-    <Command.Input placeholder="Type a command or search..." bind:value={input} />
+    <Command.Input placeholder="Type a command or search..." bind:value={input} autofocus />
     <Command.List>
 
         <Command.Group heading="Bookmarks" alwaysRender>
