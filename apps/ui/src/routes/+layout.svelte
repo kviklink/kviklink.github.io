@@ -11,11 +11,10 @@
             const newSw = registration.installing;
             newSw?.addEventListener('statechange', async () => {
                 if (newSw.state === 'installed') {
-                    // console.log('[sw] update available')
-                    // if (confirm('Update verfügbar. Bitte neu laden!')) {
-                    //     newSw.postMessage({ type: 'skipWaiting' });
-                    //     window.location.reload();
-                    // }
+                    if (confirm('Update verfügbar. Bitte neu laden!')) {
+                        newSw.postMessage({ type: 'skipWaiting' });
+                        window.location.reload();
+                    }
 
                 }
             });

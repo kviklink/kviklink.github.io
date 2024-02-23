@@ -83,6 +83,8 @@ sw.addEventListener('install', (event) => {
         SW_CSS, INSTALL_CSS, ''
     )
 
+    console.log(ASSETS)
+
     async function addFilesToCache() {
         // Pre-cache assets
         const appCache = await caches.open(APP_CACHE);
