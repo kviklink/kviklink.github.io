@@ -15,7 +15,6 @@
                         newSw.postMessage({ type: 'skipWaiting' });
                         window.location.reload();
                     }
-
                 }
             });
         });

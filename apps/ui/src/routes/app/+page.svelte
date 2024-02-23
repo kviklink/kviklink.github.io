@@ -107,7 +107,8 @@
         <Command.Group heading="Bookmarks" alwaysRender>
             {#each searchResults as b}
                 <Command.Item class="flex space-x-2" onSelect={() => {
-                    window.open(b.url, '_blank')
+                    // window.open(b.url, '_blank')
+                    window.open(b.url, '_self')
                 }}>
                     <img
                         class="w-5 h-5 rounded-sm"
@@ -124,7 +125,7 @@
         <Command.Separator />
         <Command.Group heading="Web Search" alwaysRender>
             <Command.Item alwaysRender class="flex space-x-2" onSelect={() => {
-                window.open(`https://duckduckgo.com/?q=${input}`)
+                window.open(`https://duckduckgo.com/?q=${input}`, '_self')
             }}>
                 <img
                     class="w-5 h-5 rounded-sm"
