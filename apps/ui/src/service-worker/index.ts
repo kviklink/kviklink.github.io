@@ -87,6 +87,8 @@ sw.addEventListener('install', (event) => {
         // Pre-cache assets
         const appCache = await caches.open(APP_CACHE);
         await appCache.addAll(ASSETS);
+
+        console.log(ASSETS)
     }
 
     event.waitUntil(addFilesToCache());
