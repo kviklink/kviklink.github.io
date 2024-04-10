@@ -135,8 +135,13 @@ sw.addEventListener('fetch', (event) => {
         // Get app cache
         const appCache = await caches.open(APP_CACHE);
 
+        console.log(`pathname: "${url.pathname}"`)
+
         // serve build files from the appCache
-        if (ASSETS.includes(url.pathname) || url.pathname === '/') {
+        if (ASSETS.includes(url.pathname)
+            || url.pathname === '/'
+            || url.pathname === ''
+        ) {
             const cachedResponse = await appCache.match(event.request);
             if (cachedResponse) {
                 // Log cache hit
