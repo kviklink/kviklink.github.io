@@ -37,7 +37,7 @@ export class Report {
         const errors = this.getErrors().map(e => `${e.name}: ${e.message}`)
         let str = 'Error Report:\n'
         let counter = 0
-        for (const err of errors) { str += `  [${counter++}] ${err}` }
+        for (const err of errors) { str += `  [${counter++}] ${err}\n` }
 
         return str
     }

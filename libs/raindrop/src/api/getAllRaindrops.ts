@@ -1,11 +1,12 @@
 // Imports /////////////////////////////////////////////////////////////////////
-import ky from 'ky'
+import ky, { HTTPError } from 'ky'
 import { Result, Ok, Err } from 'ts-results'
 import { Report } from 'error-report'
 import { BASE_URL } from '.'
 import { IRaindrop, SRaindrop, responseSchema } from './schemas'
 
 // API Request /////////////////////////////////////////////////////////////////
+
 /**
  * Fetches all raindrops from the API.
  */
@@ -51,8 +52,15 @@ export async function getAllRaindrops(
     return Ok(allRaindrops)
 }
 
+/**
+ * Requests a page of 50 raindrops from the given collection.
+ * The the hard-coded collection ID of '0' fetches all raindrops (bookmarks)
+ * from any collection except from the "trash" collection.
+ */
 async function requestPage(
-    authToken: string, page: number
+    authToken: string,
+    page: number,
+
 ): Promise<Result<{ raindrops: IRaindrop[], count?: number }, Report>> {
     // Make request
     const res = await Result.wrapAsync(() => ky.get(
@@ -65,7 +73,10 @@ async function requestPage(
     ))
 
     if (res.err) {
-        return Err(Report.from(res.val).add(new GetAllRaindropsError()))
+        // Get response body
+        const rb = JSON.stringify(await (res.val as HTTPError).response.json())
+
+        return Err(Report.from(res.val).add(new GetAllRaindropsError(rb)))
     }
 
     // Get JSON response
@@ -89,7 +100,14 @@ async function requestPage(
 
 // Error ///////////////////////////////////////////////////////////////////////
 export class GetAllRaindropsError extends Error {
-    constructor() { super('failed to get all raindrops') }
+    constructor(e?: unknown) {
+        if (e) {
+            super(`failed to get all raindrops: ${e}`)
+
+        } else {
+            super('failed to get all raindrops')
+        }
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -112,6 +112,33 @@ export class XbsData {
     }
 
     /**
+     * Find {@link Folder} by `title`
+     */
+    public findFolderByTitle(title: string): Option<Folder> {
+        // Breadth first search
+        const queue: Folder[] = [ this.root ]
+
+        while (queue.length > 0) {
+            // Get first node from queue
+            const node = queue.shift()!
+
+            // Check if title matches
+            if (node.title.some && node.title.val === title) {
+                return Some(node)
+            }
+
+            // Otherwise, add children to queue
+            for (const child of node.children) {
+                // Skip non-folder children
+                if (!(child instanceof Folder)) { continue }
+                queue.push(child)
+            }
+        }
+
+        return None
+    }
+
+    /**
      * Find {@link Bookmark} by `id`.
      */
     public findBookmarkById(id: number): Option<Bookmark> {
@@ -158,7 +185,6 @@ export class XbsData {
 
         return result
     }
-
 
     /**
      * Adds a bookmark with the given information to the state.

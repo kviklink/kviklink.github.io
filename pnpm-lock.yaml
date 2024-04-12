@@ -44,6 +44,9 @@ importers:
       fuse.js:
         specifier: ^7.0.0
         version: 7.0.0
+      raindrop:
+        specifier: workspace:*
+        version: link:../../libs/raindrop
       ts-results:
         specifier: ^3.3.0
         version: 3.3.0

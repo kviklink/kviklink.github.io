@@ -19,6 +19,7 @@
         "error-report": "workspace:*",
         "ts-results-utils": "workspace:*",
         "xbs": "workspace:*",
+        "raindrop": "workspace:*",
         "ts-results": "^3.3.0",
         "zod": "^3.22.4",
         "fuse.js": "^7.0.0"

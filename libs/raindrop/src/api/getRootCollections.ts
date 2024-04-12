@@ -1,5 +1,5 @@
 // Imports /////////////////////////////////////////////////////////////////////
-import ky from 'ky'
+import ky, { HTTPError } from 'ky'
 import { Result, Ok, Err } from 'ts-results'
 import { Report } from 'error-report'
 import { BASE_URL } from '.'
@@ -22,7 +22,10 @@ export async function getRootCollections(
     ))
 
     if (res.err) {
-        return Err(Report.from(res.val).add(new GetRootCollectionsError()))
+        // Get response body
+        const rb = JSON.stringify(await (res.val as HTTPError).response.json())
+
+        return Err(Report.from(res.val).add(new GetRootCollectionsError(rb)))
     }
 
     // Get JSON response
@@ -45,7 +48,14 @@ export async function getRootCollections(
 
 // Error ///////////////////////////////////////////////////////////////////////
 export class GetRootCollectionsError extends Error {
-    constructor() { super('failed to get root collections') }
+    constructor(e?: unknown) {
+        if (e) {
+            super(`failed to get root collections: ${e}`)
+
+        } else {
+            super('failed to get root collections')
+        }
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

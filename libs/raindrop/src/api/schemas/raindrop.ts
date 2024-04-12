@@ -26,4 +26,22 @@ export const SRaindrop = z.object({
 
 export type IRaindrop = z.infer<typeof SRaindrop>
 
+
+/**
+ * Represents the API response of creating a raindrop.
+ */
+export const SRaindropPost = z.object({
+    result      : z.boolean(),
+    item        : SRaindrop,
+})
+
+export type IRaindropPost = z.infer<typeof SRaindropPost>
+
+/**
+ * Represents the API response of updating a raindrop.
+ */
+export const SRaindropPut = SRaindropPost
+export type IRaindropPut = IRaindropPost
+
+
 ////////////////////////////////////////////////////////////////////////////////

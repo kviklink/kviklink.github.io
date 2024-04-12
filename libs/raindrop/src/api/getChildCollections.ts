@@ -1,5 +1,5 @@
 // Imports /////////////////////////////////////////////////////////////////////
-import ky from 'ky'
+import ky, { HTTPError } from 'ky'
 import { Result, Ok, Err } from 'ts-results'
 import { Report } from 'error-report'
 import { BASE_URL } from '.'
@@ -22,7 +22,10 @@ export async function getChildCollections(
     ))
 
     if (res.err) {
-        return Err(Report.from(res.val).add(new GetChildCollectionsError()))
+        // Get response body
+        const rb = JSON.stringify(await (res.val as HTTPError).response.json())
+
+        return Err(Report.from(res.val).add(new GetChildCollectionsError(rb)))
     }
 
     // Get JSON response
@@ -45,7 +48,14 @@ export async function getChildCollections(
 
 // Error ///////////////////////////////////////////////////////////////////////
 export class GetChildCollectionsError extends Error {
-    constructor() { super('failed to get child collections') }
+    constructor(e?: unknown) {
+        if (e) {
+            super(`failed to get child collections: ${e}`)
+
+        } else {
+            super('failed to get child collections')
+        }
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -3,21 +3,27 @@ import ky, { HTTPError } from 'ky'
 import { Result, Ok, Err } from 'ts-results'
 import { Report } from 'error-report'
 import { BASE_URL } from '.'
-import { IUserStats, SUserStats } from './schemas'
+import { IRaindrop, IRaindropPut, SRaindropPut } from './schemas'
+
+// Types ///////////////////////////////////////////////////////////////////////
+export type IRaindropPutData = Partial<Omit<IRaindrop, 'link' | '_id'>>
 
 // API Request /////////////////////////////////////////////////////////////////
 /**
- * Fetches all raindrops from the API.
+ * Put (update) a raindrop.
  */
-export async function getUserStats(
-    authToken: string
-): Promise<Result<IUserStats, Report>> {
+export async function putRaindrop(
+    authToken: string,
+    id: number,
+    raindrop: IRaindropPutData,
+): Promise<Result<IRaindropPut, Report>> {
     // Make request
-    const res = await Result.wrapAsync(() => ky.get(
-        'user/stats',
+    const res = await Result.wrapAsync(() => ky.put(
+        `raindrop/${id}`,
         {
             prefixUrl: BASE_URL,
-            headers: { 'Authorization': `Bearer ${authToken}` }
+            headers: { 'Authorization': `Bearer ${authToken}` },
+            json: raindrop,
         }
     ))
 
@@ -25,20 +31,20 @@ export async function getUserStats(
         // Get response body
         const rb = JSON.stringify(await (res.val as HTTPError).response.json())
 
-        return Err(Report.from(res.val).add(new GetUserStatsError(rb)))
+        return Err(Report.from(res.val).add(new PutRaindropError(rb)))
     }
 
     // Get JSON response
     const json = await Result.wrapAsync(() => res.val.json())
 
     if (json.err) {
-        return Err(Report.from(json.val).add(new GetUserStatsError()))
+        return Err(Report.from(json.val).add(new PutRaindropError()))
     }
 
     // Validate and parse response
-    const resData = SUserStats.safeParse(json.val)
+    const resData = SRaindropPut.safeParse(json.val)
     if (!resData.success) {
-        return Err(Report.from(resData.error).add(new GetUserStatsError()))
+        return Err(Report.from(resData.error).add(new PutRaindropError()))
     }
 
     // Return
@@ -47,13 +53,13 @@ export async function getUserStats(
 
 
 // Error ///////////////////////////////////////////////////////////////////////
-export class GetUserStatsError extends Error {
+export class PutRaindropError extends Error {
     constructor(e?: unknown) {
         if (e) {
-            super(`failed to get user stats: ${e}`)
+            super(`failed to put raindrop: ${e}`)
 
         } else {
-            super('failed to get user stats')
+            super('failed to put raindrop')
         }
     }
 }

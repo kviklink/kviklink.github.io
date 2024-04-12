@@ -3,8 +3,9 @@ export { RaindropBuilder } from './builder'
 
 // Imports /////////////////////////////////////////////////////////////////////
 import { Err, Ok, Result } from 'ts-results'
-import { getAllRaindrops, getChildCollections, getRootCollections, getUserStats } from './api'
-import { ICollection, IRaindrop, IUserStats } from './api/schemas'
+import { getAllRaindrops, getChildCollections, getRootCollections, getUserStats, IRaindropPostData, postRaindrop } from './api'
+import { ICollection, IRaindrop, IRaindropPost, IRaindropPut, IUserStats } from './api/schemas'
+import { IRaindropPutData, putRaindrop } from './api/putRaindrop'
 
 // Class ///////////////////////////////////////////////////////////////////////
 
@@ -86,6 +87,35 @@ export class RaindropClient {
         // Get data from API
         const res = await getUserStats(this.token)
         if (res.err) { return Err(res.val.toString() ) }
+
+        // Return
+        return Ok(res.val)
+    }
+
+    /**
+     * Post (create) raindrop.
+     */
+    public async postRaindrop(
+        data: IRaindropPostData
+    ): Promise<Result<IRaindropPost, string>> {
+        // Post data to API
+        const res = await postRaindrop(this.token, data)
+        if (res.err) { return Err(res.val.toString()) }
+
+        // Return
+        return Ok(res.val)
+    }
+
+    /**
+     * Post (create) raindrop.
+     */
+    public async putRaindrop(
+        id: number,
+        data: IRaindropPutData,
+    ): Promise<Result<IRaindropPut, string>> {
+        // Post data to API
+        const res = await putRaindrop(this.token, id, data)
+        if (res.err) { return Err(res.val.toString()) }
 
         // Return
         return Ok(res.val)
